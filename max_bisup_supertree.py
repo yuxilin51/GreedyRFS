@@ -16,6 +16,23 @@ def max_bisup_tree(T1, T2):
 	S = S1.union(S2)
 	X = S1.intersection(S2)
 
+	# compute T_hat 
+
+	vtx_bipars = dict()
+	bipar_vtx = dict()
+
+
+
+
+
+"""
+
+"""
+def refine():
+	pass
+
+
+
 ############### Helper functions ###############
 
 
@@ -169,11 +186,7 @@ def edges_of_bipartition(T, pi):
 
 
 
-"""
 
-"""
-def refine():
-	pass
 
 
 
