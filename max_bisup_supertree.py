@@ -3,25 +3,71 @@
 
 import networkx as nx
 import networkx.algorithms as alg
+import networkx.algorithms.operators as opalg 
+import networkx.algorithms.tree as treealg
 import networkx.algorithms.traversal.depth_first_search as dfs 
 import matplotlib.pyplot as plt
 
 def max_bisup_tree(T1, T2):
-	if not nx.isTree(T1):
+	if not alg.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
-	elif not nx.isTree(T2):
+	elif not alg.is_tree(T2):
 		print("Input T2 for max_bisup_tree method is not a tree.")  
-	S1 = set(T1.nodes())
-	S2 = set(T2,nodes())
+	S1 = leafSet(T1)
+	S2 = leafSet(T2)
 	S = S1.union(S2)
 	X = S1.intersection(S2)
 
-	# compute T_hat 
+	CT1X = bipartitions(T1,X)
+	CT2X = bipartitions(T2,X)
+	CT1X_union_CT2X = CT1X.union(CT2X)
+	CT1X_xor_CT2X = CT1X.symmetric_difference(CT2X)
 
+	bipar_subtrees = dict()
+	all_extra_subtrees = set()
+	for pi in CT1X:
+		bipar_subtrees[pi] = extra_subtrees(T1,pi)
+		all_extra_subtrees.update(bipar_subtrees[pi])
+	for pi in CT2X:
+		bipar_subtrees[pi] = extra_subtrees(T2,pi)
+		all_extra_subtrees.update(bipar_subtrees[pi])
+	# for t in all_extra_subtrees:
+	# 	nx.draw(t, with_labels= True)
+	# 	plt.show()
+	
+	# compute T_hat, which is a star on leaf set of X with all extra subtrees attached to the center
+	T_hat = nx.Graph()
+	T_hat.add_node('0')
+	for x in X:
+		T_hat.add_edge('0',x)
+	for r,t in all_extra_subtrees:
+		T_hat = opalg.binary.union(T_hat,t)
+		T_hat.add_edge('0',r)
+
+	# vtx_bipars is a dictionary between a vertice v and a set of bipartitions whose addition requires refinement at v
 	vtx_bipars = dict()
+	# bipar_vtx is a dictionary between a biparition pi and the vertex that should be refined for the addition of pi
 	bipar_vtx = dict()
+	# at beginning, vertex '0' associated with every bipartition and every bipartition points to '0'
+	vtx_bipars['0'] = CT1X_union_CT2X
+	for pi in CT1X_union_CT2X:
+		bipar_vtx[pi] = '0'
+
+	# compute maximum independent set
 
 
+"""
+Constructs and returns the bipartite incompatibility graph of bipartitions in CT1X_xor_CT2X, which is the symmetric difference of C(T1|_X) and C(T2|_X)  
+"""
+def incompatibility_graph(T1,T2):
+	pass
+
+
+"""
+Computes the maximum independent set in the given directed bipartite graph
+"""
+def max_ind_set(DG):
+	pass
 
 
 
@@ -55,7 +101,7 @@ def bipartition(T, e):
 	A = set(dfs.dfs_preorder_nodes(T,e[0]))
 	B = set(dfs.dfs_preorder_nodes(T,e[1]))
 	# returns the bipartition if both sides are non-empty or None otherwise
-	return (A,B) if bipartition_is_valid((A,B)) else None
+	return (frozenset(A),frozenset(B)) if bipartition_is_valid((A,B)) else None
 
 
 
@@ -69,11 +115,13 @@ def restrict_bipartition(pi, X):
 	A = pi[0].intersection(X)
 	B = pi[1].intersection(X)
 	# returns the bipartition if both sides are non-empty or None otherwise
-	return (A,B) if bipartition_is_valid((A,B)) else None
+	return (frozenset(A),frozenset(B)) if bipartition_is_valid((A,B)) else None
 
 
 
-
+"""
+Returns whether the bipartition has both sides non-empty
+"""
 def bipartition_is_valid(pi):
 	return len(pi[0]) != 0 and len(pi[1]) != 0 
 
@@ -81,7 +129,7 @@ def bipartition_is_valid(pi):
 
 
 """
-Decides whether the bipartition pi is trivial
+Returns whether the bipartition pi is trivial, i.e., at least one side has only 1 element
 """
 def bipartition_is_trivial(pi):
 	return len(pi[0]) == 1 or len(pi[1]) == 1
@@ -96,11 +144,13 @@ def bipartitions(T, X = None):
 	if X is None:
 		X = leafSet(T)
 	# iterate through all edges and add the bipartition induced by that edge if the bipartition is not None
-	bipartitions = []
+	bipartitions = set()
 	for e in T.edges():
 		pi = restrict_bipartition(bipartition(T,e), X)
 		if pi is not None:
-			bipartitions.append(pi)
+			pi_reverse = (pi[1],pi[0])
+			if pi not in bipartitions and pi_reverse not in bipartitions:
+				bipartitions.add(pi)
 	return bipartitions
 
 
@@ -109,7 +159,7 @@ def bipartitions(T, X = None):
 Returns the set of non-trivial bipartitions of the tree T restricted to leaves in X
 """
 def non_trivial_bipartitions(T, X = None):
-	return [pi for pi in bipartitions(T,X) if not bipartition_is_trivial(pi)]
+	return set([pi for pi in bipartitions(T,X) if not bipartition_is_trivial(pi)])
 
 
 
@@ -130,14 +180,12 @@ def same_bipartition(pi1,pi2):
 Returns the (component) subtree in T-e containing the vertex v
 """
 def subtree_off_edge(T, e, v):
-	print("edge is ", e, "node is ", v)
 	T = T.copy()
 	T.remove_edge(*e)
 	C = alg.components.connected_components(T)
 
 	for c in C:
 		if v in c:
-			print("component ", c)
 			return T.subgraph(c)
 
 
@@ -147,7 +195,6 @@ Returns the extra subtrees attached to the edge that induces pi in T|_X, where X
 """
 def extra_subtrees(T, pi):
 	X = pi[0].union(pi[1])
-
 	# get a list of (possible duplicating) nodes on the path of edges which induces pi in T|_X, where X is the leaf set of pi
 	nodes_on_path = []
 	for e in edges_of_bipartition(T,pi):
@@ -160,13 +207,14 @@ def extra_subtrees(T, pi):
 		else:
 			nodes_count[node] = nodes_count[node]+1
 	inner_nodes = {x for x in nodes_on_path if nodes_count[x] == 2}
+	# compute edge node pairs of (edge between inner node to the root of the extra subtree, the root of the extra subtree)
+	# where root of the extra subtree is the neighbor of inner node that does not show up in nodes_on_path
 	edge_node_pairs = []
 	for node in inner_nodes:
 		for other in T.neighbors(node):
 			if other not in nodes_on_path:
 				edge_node_pairs.append(((node,other),other))
-	print(edge_node_pairs)
-	return [subtree_off_edge(T,*p) for p in edge_node_pairs]
+	return {(v, subtree_off_edge(T,e,v)) for e,v in edge_node_pairs}
 
 
 
@@ -191,9 +239,15 @@ def edges_of_bipartition(T, pi):
 
 
 def main():
-	T = nx.Graph()
-	T.add_nodes_from(['a','b','c','d','e','f','g','ab','abc','dg','dgef','ef'])
-	T.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('d','dg'),('g','dg'),('dg','dgef'),('abc','dgef')])
+	T1= nx.Graph()
+	T1.add_nodes_from(['a','b','c','d','e','f','g','ab','abc','dg','dgef','ef'])
+	T1.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('d','dg'),('g','dg'),('dg','dgef'),('abc','dgef')])
+	T2 = nx.Graph()
+	T2.add_edges_from([('a','ab'),('b','ab'),('i','ij'),('j',"ij"),('ab','abij'),('ij','abij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','defh'),('f','defh'),('defh','abij')])
+	max_bisup_tree(T1,T2)
+	# balanced = ((((),()),()),(((),()),((),()))) 
+	# T2= nx.from_nested_tuple(balanced)
+
 	# extra_trees = extra_subtrees(T1, ({'a','c'},{'e','f'}))
 	# b1 = bipartitions(T)
 	# b2 = non_trivial_bipartitions(T,{'a','d','e','f'})
@@ -209,7 +263,9 @@ def main():
 	# for t in extra_subtrees(T,({'a','b'},{'e','f'})):
 	# 	print("extra subtree nodes", t.node())
 	# 	print("extra subtree edges", t.edges())
-	# nx.draw(T, with_labels = True)
+	# nx.draw(T1, with_labels = True)
+	# plt.show()
+	# nx.draw(T2, with_labels = True)
 	# plt.show()
 
 if __name__ == '__main__':
