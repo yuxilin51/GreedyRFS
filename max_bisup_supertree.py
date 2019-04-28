@@ -119,35 +119,122 @@ def max_ind_set(G,C1,C2, weight):
 
 """
 def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
+	A = pi[0]
+	B = pi[1]
 	# Case 1: pi is trivial, do not split vertex, but attach all subtrees in order
 	if bipar_is_trivial(pi):
-		# find left and right vertices (since we do not need to split)
-		if len(pi[0]) == 1:
-			left = next(iter(pi[0]))
-			right = bipar_vtx[pi]
+		# find va and vb 
+		if len(A) == 1:
+			va = next(iter(A))
+			vb = bipar_vtx[pi]
 		else:
-			left = bipar_vtx[pi]
-			right = next(iter(pi[1]))
+			va = bipar_vtx[pi]
+			vb = next(iter(B))
 
-		# remove edge (left, right)
-		T.remove_edge(left,right)
-		# create a new vertex for each subtree connect through left to right
-		prev = left
+		# remove edge (va, vb)
+		T.remove_edge(va,vb)
+		# create a new vertex for each subtree connect through va to vb
+		prev = va
 		attach_point = bipar_vtx[pi]
 		for v,t in bipar_subtrees[pi]:
 			T.remove_edge(v, attach_point)
-			current = left+v
+			current = va+v
 			T.add_node(current)
 			T.add_edge(prev,current)
 			T.add_edge(current,v)
 			prev = current
-		# connect last prev to right
-		T.add_edge(prev, right)		
-		# delete pi from vtx_bipars and bipar_vtx
+		# connect last prev to vb
+		T.add_edge(prev, vb)		
+		
+		# delete pi from vtx_bipars and bipar_vtx (may not be necessary?)
+		vtx_bipars[attach_point].remove(pi)
+		del bipar_vtx[pi]
 
 	# Case 2: pi is not trivial
 	else:
-		pass
+		# find vtx to split as original 
+		original = bipar_vtx[pi]
+
+
+		# make two copies of original named va and vb
+		va = original+'0'
+		vb = original+'1'
+
+		# create a new vertex for each subtree associated with pi connect through va to vb
+		prev = va
+		for r,t in bipar_subtrees[pi]:
+			T.remove_edge(r, original)
+			current = va+r
+			T.add_node(current)
+			T.add_edge(prev,current)
+			T.add_edge(current,r)
+			prev = current
+		# connect last prev to vb
+		T.add_edge(prev, vb)
+
+		vtx_bipars[va] = set()
+		vtx_bipars[vb] = set()
+		incompatible_bipars = set()
+		# update the pointers of all bipartitions associated with original which are compatible with pi
+		for bipar in vtx_bipars[original]:
+			if not same_bipartition(bipar, pi) and bipartitions_are_compatible(bipar, pi):
+				print("bipar[0] ", bipar[0], "bipar[1]", bipar[1])
+				print("A ", A, "B ", B)
+				if bipar[0] <= A or bipar[1] <= A:
+					vtx_bipars[va].add(bipar)
+					bipar_vtx[bipar] = va
+				elif bipar[0] <= B or bipar[1] <= B:
+					vtx_bipars[vb].add(bipar)
+					bipar_vtx[bipar] = vb
+				else:
+					print("Something is wrong because ", bipar, " is compatible with ", pi, " but its sides are not subsets of A or B")
+			elif not bipartitions_are_compatible(bipar,pi):
+				incompatible_bipars.add(bipar)
+
+		# partition other subtrees attached to the vertex
+		for bipar in vtx_bipars[va]:
+			for r,t in bipar_subtrees[bipar]:
+				T.remove_edge(r, original)
+				T.add_edge(r, va)
+		for bipar in vtx_bipars[vb]:
+			for r,t in bipar_subtrees[bipar]:
+				T.remove_edge(r, original)
+				T.add_edge(r, vb)
+		for bipar in incompatible_bipars:
+			for r,t in bipar_subtrees[bipar]:
+				T.remove_edge(r, original)
+				T.add_edge(r, va)
+
+
+
+		# partition neighbors of original into two sets, 
+		#connect those in components containing leaves of A to va and connect those in components containing leaves B to vb
+		neighbors = set(T.neighbors(original)).copy()
+		print("current neighbors of original ", original, " is ", set(neighbors))
+		T.remove_node(original)
+		
+		for n in neighbors:
+			components = nx.connected_components(T)
+			print("checking neighbor ", n)
+			for c in components:
+				print("checking comp ", c)
+				if n in c:
+					print("found containing comp")
+					if len(c & A) != 0:
+						print("added edge to va")
+						T.add_edge(n, va)
+					elif len(c & B) != 0:
+						print("added edge to vb")
+						T.add_edge(n, vb)
+					else:
+						print("something is wrong")
+					break
+
+		# delete original as a key in vtx_bipars
+		del vtx_bipars[original]
+
+		# delete pi as a key in bipar_vtx (may not be necessary?)
+		del bipar_vtx[pi]
 
 ############### Helper functions ###############
 
