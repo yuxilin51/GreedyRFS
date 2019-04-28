@@ -306,6 +306,18 @@ def edges_of_bipartition(T, pi):
 			edges.append(e)
 	return edges
 
+def path_of_bipartition(T, pi):
+	nodes_on_path = []
+	for e in edges_of_bipartition(T,pi):
+		nodes_on_path.extend(e)
+	#count the appearance of nodes in the list and the ones showing up twice are the inner nodes
+	nodes_count = dict()
+	for node in nodes_on_path:
+		if node not in nodes_count:
+			nodes_count[node] = 1
+		else:
+			nodes_count[node] = nodes_count[node]+1
+	(source,sink) = ()
 
 
 
