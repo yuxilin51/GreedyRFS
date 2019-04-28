@@ -19,21 +19,36 @@ def max_bisup_tree(T1, T2):
 
 	CT1X = bipartitions(T1,X)
 	CT2X = bipartitions(T2,X)
-	union = bipar_set_union(CT1X,CT2X)
+
+	# make changes to bipartitions in CT2X such that if it also shows up in CT1X, the order of the tuple follows the one drom CT1X
+	# this makes sure that we can directly do set union and intersection on CT1X and CT2X
+	# and that the ordered trees respect the same order
+	changes = set()
+	for pi in CT2X:
+		if pi not in CT1X and equiv_bipar(pi) in CT1X:
+			changes.add(pi)
+	for pi in changes:
+		CT2X.remove(pi)
+		CT2X.add(equiv_bipar(pi))
 
 	bipar_subtrees = dict()
 	weight = dict()
 	all_extra_subtrees = set()
-	# compute extra_subtrees associated with each bipartition and the weight of each bipartition
+	# compute ordered_subtrees associated with each bipartition and the weight of each bipartition
 	for pi in CT1X:
-		bipar_subtrees[pi] = extra_subtrees(T1,pi)
+		bipar_subtrees[pi] = ordered_subtrees(T1,pi)
 		weight[pi] = len(bipar_subtrees[pi])+1
 		all_extra_subtrees.update(bipar_subtrees[pi])
 	for pi in CT2X:
-		bipar_subtrees[pi] = extra_subtrees(T2,pi)
+		if pi not in CT1X:
+			bipar_subtrees[pi] = ordered_subtrees(T2,pi)
+		else:
+			bipar_subtrees[pi].extend(ordered_subtrees(T2,pi))
 		weight[pi] = len(bipar_subtrees[pi])+1
 		all_extra_subtrees.update(bipar_subtrees[pi])
-	# for t in all_extra_subtrees:
+	# for pi in CT1X & CT2X:
+	# 	print("weight of pi = ", pi, ": ", weight[pi])
+	# for r,t in all_extra_subtrees:
 	# 	nx.draw(t, with_labels= True)
 	# 	plt.show()
 	
@@ -45,41 +60,39 @@ def max_bisup_tree(T1, T2):
 	for r,t in all_extra_subtrees:
 		T.update(t)
 		T.add_edge('0',r)
+	# nx.draw(T, with_labels = True)
+	# plt.show()
 
 	# vtx_bipars is a dictionary between a vertice v and a set of bipartitions whose addition requires refinement at v
 	vtx_bipars = dict()
 	# bipar_vtx is a dictionary between a biparition pi and the vertex that should be refined for the addition of pi
 	bipar_vtx = dict()
 	# at beginning, vertex '0' associated with every bipartition and every bipartition points to '0'
-	vtx_bipars['0'] = union
-	for pi in union:
+	vtx_bipars['0'] = CT1X | CT2X
+	for pi in CT1X | CT2X:
 		bipar_vtx[pi] = '0'
 
 
-	C1_C2 = bipar_set_difference(CT1X,CT2X)
-	C2_C1 = bipar_set_difference(CT2X,CT1X)
 	# compute maximum independent set
-	G = incompatibility_graph(C1_C2,C2_C1)
-	I = max_ind_set(G, C1_C2, C2_C1, weight)
-	print("max independent set is ", I)
+	G = incompatibility_graph(CT1X, CT2X)
+	I = max_ind_set(G, CT1X, CT2X, weight)
 
-	for pi in bipar_set_union(I, bipar_set_intersection(CT1X, CT2X)):
-		refine(T, )
-	
-
-	nx.draw_planar(G, with_labels = True)
-	plt.show()
+	for pi in I | (CT1X & CT2X):
+		print("refine with ",  pi )
+		refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees)
+		nx.draw(T, with_labels = True)
+		plt.show()
 
 
 """
 Constructs and returns the bipartite incompatibility graph of bipartitions in C1 - C2 and C2 - C1, i.e.,  the symmetric difference of C(T1|_X) and C(T2|_X).  
 """
-def incompatibility_graph(C1_C2,C2_C1):
+def incompatibility_graph(C1,C2):
 	G = nx.DiGraph()
-	G.add_nodes_from(C1_C2)
-	G.add_nodes_from(C2_C1)
-	for pi1 in C1_C2:
-		for pi2 in C2_C1:
+	G.add_nodes_from(C1-C2)
+	G.add_nodes_from(C2-C1)
+	for pi1 in C1-C2:
+		for pi2 in C2-C1:
 			if not bipartitions_are_compatible(pi1,pi2):
 				G.add_edge(pi1, pi2, capacity = math.inf)
 	return G
@@ -92,23 +105,49 @@ First, add a source s and an edge from s to each of C1-C2, then, add a sink t an
 Each new edge has capacity
 Find min-cut max flow on resulting graph and return 
 """
-def max_ind_set(G,C1_C2,C2_C1, weight):
+def max_ind_set(G,C1,C2, weight):
 	G.add_nodes_from(['s','t'])
-	for pi in C1_C2:
+	for pi in C1-C2:
 		G.add_edge('s',pi,capacity = weight[pi])
-	for pi in C2_C1:
+	for pi in C2-C1:
 		G.add_edge(pi,'t',capacity = weight[pi])
 	cut_value, cut_partition = nx.minimum_cut(G, 's', 't')
-	return (cut_partition[0] & C1_C2) | (cut_partition[1] & C2_C1)
+	return (cut_partition[0] & (C1-C2)) | (cut_partition[1] & (C2-C1))
 
 
 """
 
 """
-def refine():
-	pass
+def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
+	# Case 1: pi is trivial, do not split vertex, but attach all subtrees in order
+	if bipar_is_trivial(pi):
+		# find left and right vertices (since we do not need to split)
+		if len(pi[0]) == 1:
+			left = next(iter(pi[0]))
+			right = bipar_vtx[pi]
+		else:
+			left = bipar_vtx[pi]
+			right = next(iter(pi[1]))
 
+		# remove edge (left, right)
+		T.remove_edge(left,right)
+		# create a new vertex for each subtree connect through left to right
+		prev = left
+		attach_point = bipar_vtx[pi]
+		for v,t in bipar_subtrees[pi]:
+			T.remove_edge(v, attach_point)
+			current = left+v
+			T.add_node(current)
+			T.add_edge(prev,current)
+			T.add_edge(current,v)
+			prev = current
+		# connect last prev to right
+		T.add_edge(prev, right)		
+		# delete pi from vtx_bipars and bipar_vtx
 
+	# Case 2: pi is not trivial
+	else:
+		pass
 
 ############### Helper functions ###############
 
@@ -162,7 +201,7 @@ def bipartition_is_valid(pi):
 """
 Returns whether the bipartition pi is trivial, i.e., at least one side has only 1 element.
 """
-def bipartition_is_trivial(pi):
+def bipar_is_trivial(pi):
 	return len(pi[0]) == 1 or len(pi[1]) == 1
 
 
@@ -203,7 +242,7 @@ def bipartitions(T, X = None):
 Returns the set of non-trivial bipartitions of the tree T restricted to leaves in X.
 """
 def non_trivial_bipartitions(T, X = None):
-	return set([pi for pi in bipartitions(T,X) if not bipartition_is_trivial(pi)])
+	return set([pi for pi in bipartitions(T,X) if not bipar_is_trivial(pi)])
 
 
 
@@ -221,27 +260,27 @@ def same_bipartition(pi1,pi2):
 
 
 
-"""
-Returns the set difference C1 - C2
-"""
-def bipar_set_difference(C1,C2):
-	return {pi for pi in C1 if pi not in C2 and equiv_bipar(pi) not in C2}
+# """
+# Returns the set difference C1 - C2
+# """
+# def bipar_set_difference(C1,C2):
+# 	return {pi for pi in C1 if pi not in C2 and equiv_bipar(pi) not in C2}
 
 
 
-"""
-Returns the set intersection C1 & C2
-"""
-def bipar_set_intersection(C1,C2):
-	return {pi for pi in C1 if pi in C2 or equiv_bipar(pi) in C2}
+# """
+# Returns the set intersection C1 & C2
+# """
+# def bipar_set_intersection(C1,C2):
+# 	return {pi for pi in C1 if pi in C2 or equiv_bipar(pi) in C2}
 
 
 
-"""
-Returns the set union C1 | C2
-"""
-def bipar_set_union(C1,C2):
-	return bipar_set_difference(C1,C2) | C2
+# """
+# Returns the set union C1 | C2
+# """
+# def bipar_set_union(C1,C2):
+# 	return bipar_set_difference(C1,C2) | C2
 
 
 
@@ -265,33 +304,70 @@ def subtree_off_edge(T, e, v):
 
 
 
+# """
+# Returns the extra subtrees attached to the edge that induces pi in T|_X, where X is the leaf set of pi.
+# """
+# def extra_subtrees(T, pi):
+# 	X = pi[0].union(pi[1])
+# 	# get a list of (possible duplicating) nodes on the path of edges which induces pi in T|_X, where X is the leaf set of pi
+# 	nodes_on_path = []
+# 	for e in edges_of_bipartition(T,pi):
+# 		nodes_on_path.extend(e)
+# 	#count the appearance of nodes in the list and the ones showing up twice are the inner nodes
+# 	nodes_count = dict()
+# 	for node in nodes_on_path:
+# 		if node not in nodes_count:
+# 			nodes_count[node] = 1
+# 		else:
+# 			nodes_count[node] = nodes_count[node]+1
+# 	inner_nodes = {x for x in nodes_on_path if nodes_count[x] == 2}
+# 	# compute edge node pairs of (edge between inner node to the root of the extra subtree, the root of the extra subtree)
+# 	# where root of the extra subtree is the neighbor of inner node that does not show up in nodes_on_path (assume fully resolved tree)
+# 	edge_node_pairs = []
+# 	for node in inner_nodes:
+# 		for other in T.neighbors(node):
+# 			if other not in nodes_on_path:
+# 				edge_node_pairs.append(((node,other),other))
+# 	return {(v, subtree_off_edge(T,e,v)) for e,v in edge_node_pairs}
+
+
 """
-Returns the extra subtrees attached to the edge that induces pi in T|_X, where X is the leaf set of pi.
+Returns an ordered list of extra subtrees on the path of edges which induce pi = (A,B) in T|_X where X = leaves of pi
+The first extra subtree is closest to A
 """
-def extra_subtrees(T, pi):
-	X = pi[0].union(pi[1])
-	# get a list of (possible duplicating) nodes on the path of edges which induces pi in T|_X, where X is the leaf set of pi
-	nodes_on_path = []
-	for e in edges_of_bipartition(T,pi):
-		nodes_on_path.extend(e)
-	#count the appearance of nodes in the list and the ones showing up twice are the inner nodes
+def ordered_subtrees(T, pi):
+	#count the appearance of nodes in the set of edges and the ones showing up once are the two ends s and t
 	nodes_count = dict()
-	for node in nodes_on_path:
-		if node not in nodes_count:
-			nodes_count[node] = 1
-		else:
-			nodes_count[node] = nodes_count[node]+1
-	inner_nodes = {x for x in nodes_on_path if nodes_count[x] == 2}
+	for e in edges_of_bipartition(T,pi):
+		for v in e:
+			if v not in nodes_count:
+				nodes_count[v] = 1
+			else:
+				nodes_count[v] = nodes_count[v] + 1
+	ends = [v for v,count in nodes_count.items() if count == 1]
+	a = next(iter(pi[0]))
+	dist0 = nx.dijkstra_path_length(T,a,ends[0])
+	dist1 = nx.dijkstra_path_length(T,a,ends[1])
+	if dist0 < dist1:
+		s = ends[0]
+		t = ends[1]
+	else:
+		s = ends[1]
+		t = ends[0]
+	# find the path between s and t, excluding s and t
+	inner_nodes = nx.shortest_path(T, s, t)[1:-1]
 	# compute edge node pairs of (edge between inner node to the root of the extra subtree, the root of the extra subtree)
 	# where root of the extra subtree is the neighbor of inner node that does not show up in nodes_on_path (assume fully resolved tree)
 	edge_node_pairs = []
 	for node in inner_nodes:
 		for other in T.neighbors(node):
-			if other not in nodes_on_path:
+			if other not in nodes_count:
 				edge_node_pairs.append(((node,other),other))
-	return {(v, subtree_off_edge(T,e,v)) for e,v in edge_node_pairs}
-
-
+	trees = [(v, subtree_off_edge(T,e,v)) for e,v in edge_node_pairs]
+	# for v,t in trees:
+	# 	print("root", v)
+	# 	print("tree edges", t.edges())
+	return trees
 
 
 """
@@ -306,21 +382,6 @@ def edges_of_bipartition(T, pi):
 			edges.append(e)
 	return edges
 
-def path_of_bipartition(T, pi):
-	nodes_on_path = []
-	for e in edges_of_bipartition(T,pi):
-		nodes_on_path.extend(e)
-	#count the appearance of nodes in the list and the ones showing up twice are the inner nodes
-	nodes_count = dict()
-	for node in nodes_on_path:
-		if node not in nodes_count:
-			nodes_count[node] = 1
-		else:
-			nodes_count[node] = nodes_count[node]+1
-	(source,sink) = ()
-
-
-
 
 
 
@@ -330,11 +391,12 @@ def main():
 	T1.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('d','dg12'),('g','g12'),('g12','dg12'),('g12',(1,2)),('dg12','dgef'),('abc','dgef')])
 	T2 = nx.Graph()
 	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
-	max_bisup_tree(T1,T2)
-	C1 = bipartitions(T1, {'a','b', 'd','e','f'})
-	C2 = bipartitions(T2, {'a','b', 'd','e','f'})
-	print("union ", bipar_set_union(C1, C2))
-	print("difference ", bipar_set_difference(C1,C2))
+	max_bisup_tree(T1,T2)	
+	# ordered_subtrees(T2, ({'e','h'},{'a','b'}))
+	# C1 = bipartitions(T1, {'a','b', 'd','e','f'})
+	# C2 = bipartitions(T2, {'a','b', 'd','e','f'})
+	# print("union ", bipar_set_union(C1, C2))
+	# print("difference ", bipar_set_difference(C1,C2))
 	# for pi in bipartitions(T1, {'a','b', 'd','e','f'}):
 	# 	for pi2 in bipartitions(T2,{'a','b', 'd','e','f'}):
 	# 		print(pi," and ",pi2," are compatible: ",bipartitions_are_compatible(pi,pi2))
