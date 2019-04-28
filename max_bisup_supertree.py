@@ -4,13 +4,11 @@
 import math
 import networkx as nx
 import networkx.algorithms as alg
-import networkx.algorithms.operators as opalg 
-import networkx.algorithms.tree as treealg
 import networkx.algorithms.traversal.depth_first_search as dfs 
 import matplotlib.pyplot as plt
 
 def max_bisup_tree(T1, T2):
-	if not alg.is_tree(T1):
+	if not nx.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
 	elif not alg.is_tree(T2):
 		print("Input T2 for max_bisup_tree method is not a tree.")  
@@ -21,7 +19,7 @@ def max_bisup_tree(T1, T2):
 
 	CT1X = bipartitions(T1,X)
 	CT2X = bipartitions(T2,X)
-	union = bipar_set_union(C1TX,C2TX)
+	union = bipar_set_union(CT1X,CT2X)
 
 	bipar_subtrees = dict()
 	weight = dict()
@@ -39,15 +37,14 @@ def max_bisup_tree(T1, T2):
 	# 	nx.draw(t, with_labels= True)
 	# 	plt.show()
 	
-	# compute T_hat, which is a star on leaf set of X with all extra subtrees attached to the center
-	T_hat = nx.Graph()
-	T_hat.add_node('0')
+	# compute T = T_hat, which is a star on leaf set of X with all extra subtrees attached to the center
+	T = nx.Graph()
+	T.add_node('0')
 	for x in X:
-		T_hat.add_edge('0',x)
+		T.add_edge('0',x)
 	for r,t in all_extra_subtrees:
-		# T_hat = opalg.binary.union(T_hat,t)
-		T_hat.update(t)
-		T_hat.add_edge('0',r)
+		T.update(t)
+		T.add_edge('0',r)
 
 	# vtx_bipars is a dictionary between a vertice v and a set of bipartitions whose addition requires refinement at v
 	vtx_bipars = dict()
@@ -59,11 +56,17 @@ def max_bisup_tree(T1, T2):
 		bipar_vtx[pi] = '0'
 
 
-	C1_C2 = bipar_set_difference(C1TX,C2TX)
-	C2_C1 = bipar_set_difference(C2TX,C1TX)
+	C1_C2 = bipar_set_difference(CT1X,CT2X)
+	C2_C1 = bipar_set_difference(CT2X,CT1X)
 	# compute maximum independent set
 	G = incompatibility_graph(C1_C2,C2_C1)
 	I = max_ind_set(G, C1_C2, C2_C1, weight)
+	print("max independent set is ", I)
+
+	for pi in bipar_set_union(I, bipar_set_intersection(CT1X, CT2X)):
+		refine(T, )
+	
+
 	nx.draw_planar(G, with_labels = True)
 	plt.show()
 
@@ -95,8 +98,8 @@ def max_ind_set(G,C1_C2,C2_C1, weight):
 		G.add_edge('s',pi,capacity = weight[pi])
 	for pi in C2_C1:
 		G.add_edge(pi,'t',capacity = weight[pi])
-
-
+	cut_value, cut_partition = nx.minimum_cut(G, 's', 't')
+	return (cut_partition[0] & C1_C2) | (cut_partition[1] & C2_C1)
 
 
 """
@@ -216,11 +219,6 @@ def same_bipartition(pi1,pi2):
 		return (pi1[0]==pi2[0] and pi1[1] == pi2[1]) or (pi1[0] == pi2[1] and pi1[1] == pi2[0])
 
 
-"""
-Returns the set union C1 | C2
-"""
-def bipar_set_union(C1,C2):
-	return bipar_set_difference(C1,C2) | C2
 
 
 """
@@ -228,6 +226,23 @@ Returns the set difference C1 - C2
 """
 def bipar_set_difference(C1,C2):
 	return {pi for pi in C1 if pi not in C2 and equiv_bipar(pi) not in C2}
+
+
+
+"""
+Returns the set intersection C1 & C2
+"""
+def bipar_set_intersection(C1,C2):
+	return {pi for pi in C1 if pi in C2 or equiv_bipar(pi) in C2}
+
+
+
+"""
+Returns the set union C1 | C2
+"""
+def bipar_set_union(C1,C2):
+	return bipar_set_difference(C1,C2) | C2
+
 
 
 """
@@ -302,8 +317,8 @@ def main():
 	T1= nx.Graph()
 	T1.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('d','dg12'),('g','g12'),('g12','dg12'),('g12',(1,2)),('dg12','dgef'),('abc','dgef')])
 	T2 = nx.Graph()
-	T2.add_edges_from([('a','ab'),('b','ab'),('i','ij'),('j',"ij"),('ab','abij'),('ij','abij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','defh'),('f','defh'),('defh','abij')])
-	# max_bisup_tree(T1,T2)
+	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
+	max_bisup_tree(T1,T2)
 	C1 = bipartitions(T1, {'a','b', 'd','e','f'})
 	C2 = bipartitions(T2, {'a','b', 'd','e','f'})
 	print("union ", bipar_set_union(C1, C2))
