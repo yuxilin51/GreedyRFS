@@ -24,8 +24,8 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 		for k in range(n-1):
 			idx1,idx2 = max(shared_leaves, key = shared_leaves.get)
 			new_t = max_bisup_tree_two(trees[idx1],trees[idx2])
-			# nx.draw(new_t, with_labels = True)
-			# plt.show()
+			nx.draw(new_t, with_labels = True)
+			plt.show()
 			used_tree_idxs.update({idx1,idx2})
 			# compute num shared leaves between newtree and all existing but not used trees and add to dictionary
 			trees.append(new_t)
@@ -91,14 +91,15 @@ def max_bisup_tree_two(T1, T2):
 	# compute ordered_subtrees associated with each bipartition and the weight of each bipartition
 	for pi in CT1X:
 		bipar_subtrees[pi] = ordered_subtrees(T1,pi)
-		weight[pi] = len(bipar_subtrees[pi])+1
+		weight[pi] = len(edges_of_bipartition(T1,pi))
 		all_extra_subtrees.update(bipar_subtrees[pi])
 	for pi in CT2X:
 		if pi not in CT1X:
 			bipar_subtrees[pi] = ordered_subtrees(T2,pi)
+			weight[pi] = len(edges_of_bipartition(T2,pi))
 		else:
 			bipar_subtrees[pi].extend(ordered_subtrees(T2,pi))
-		weight[pi] = len(bipar_subtrees[pi])+1
+			weight[pi] = weight[pi] + len(edges_of_bipartition(T2,pi))
 		all_extra_subtrees.update(bipar_subtrees[pi])
 	# for pi in CT1X & CT2X:
 	# 	print("weight of pi = ", pi, ": ", weight[pi])
@@ -482,7 +483,7 @@ def ordered_subtrees(T, pi):
 	# find the path between s and t, excluding s and t
 	inner_nodes = nx.shortest_path(T, s, t)[1:-1]
 	# compute edge node pairs of (edge between inner node to the root of the extra subtree, the root of the extra subtree)
-	# where root of the extra subtree is the neighbor of inner node that does not show up in nodes_on_path (assume fully resolved tree)
+	# where roots of the extra subtrees are the neighbors of inner node that do not show up in nodes_on_path 
 	edge_node_pairs = []
 	for node in inner_nodes:
 		for other in T.neighbors(node):
@@ -512,7 +513,9 @@ def edges_of_bipartition(T, pi):
 
 def main():
 	T1= nx.Graph()
-	T1.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('d','dg12'),('g','g12'),('g12','dg12'),('g12','12'),('dg12','dgef'),('abc','dgef')])
+	T1.add_edges_from([('a','ab'),('b','ab'),('c','abcdm'),('ab','abcdm'),('d','abcdm'),('m','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
+	# nx.draw(T1, with_labels = True)
+	# plt.show()
 	T2 = nx.Graph()
 	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
 	T3 = nx.Graph()
@@ -520,6 +523,7 @@ def main():
 	T4 = nx.Graph()
 	T4.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgh12ef'),('d','dh'),('h','dh'),('dh','dgh12'),('g','g12'),('g12','dgh12'),('g12','12'),('dgh12','dgh12ef'),('abc','dgh12ef')])
 	max_bisup_tree_many([T1,T2,T3,T4])
+	print(ordered_subtrees(T1,({'a','b','c'},{'e','f'})))
 	# T5 = nx.Graph()
 	# T5.add_edges_from([('a','ab'),('b','ab'),('ab','abch'),('c','abch'),('h','abch'),('d','defgi'),('e','defgi'),('f','defgi'),('g','defgi'),('i','defgi'),('abch','defgi')])
 	# arbitrary_refine(T5)

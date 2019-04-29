@@ -34,8 +34,8 @@ def run_max_bisup_suptertree(dd_trees, outdir):
                 t.add_edge(tail,head)
         # suppress any degree two node (exists at least one b/c of root of dendropy tree)
         suppress_degree_two(t)
-        # nx.draw(t, with_labels = True)
-        # plt.show()
+        nx.draw(t, with_labels = True)
+        plt.show()
         trees.append(t)
     output_dd_tree = nx_tree_to_dd_tree(supertree.max_bisup_tree_many(trees))
     output_dd_tree.write(path = outdir, schema = "newick")
@@ -44,7 +44,7 @@ def run_max_bisup_suptertree(dd_trees, outdir):
 Turns a networkx tree into a dendropy tree
 """
 def nx_tree_to_dd_tree(T):
-    return dd.Tree()
+    return 
 
 """
 Delete degree two nodes and connect its neighbors
@@ -56,9 +56,11 @@ def suppress_degree_two(T):
         T.add_edge(nbs[0],nbs[1])
         T.remove_node(v)
 
-
+"""
+Get list newick strings from files and turn into dendropy trees
+"""
 def main(args):
-    s1 = "(((A,B),C),(D,E));"
+    s1 = "((A,B),C,(D,E));"
     t1 = dd.Tree.get(data = s1, schema = "newick")
     s2 = "((((A,B),C),((D,E),F)),G);"
     t2 = dd.Tree.get(data = s2, schema = "newick")
@@ -66,5 +68,6 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-
+    parser.add_argument("-o", "--outdir", )
+    parser.add_argument()
     main(parser.parse_args())
