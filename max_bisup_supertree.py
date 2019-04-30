@@ -16,7 +16,7 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 	n = len(trees)
 	used_tree_idxs = set()
 	if ordering is "max_shared_leaves":
-		leaf_sets = [leafSet(t) for t in trees]
+		leaf_sets = [leaf_set(t) for t in trees]
 		shared_leaves = dict()
 		for i in range(n):
 			for j in range(i+1, n):
@@ -24,12 +24,12 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 		for k in range(n-1):
 			idx1,idx2 = max(shared_leaves, key = shared_leaves.get)
 			new_t = max_bisup_tree_two(trees[idx1],trees[idx2])
-			nx.draw(new_t, with_labels = True)
-			plt.show()
+			# nx.draw(new_t, with_labels = True)
+			# plt.show()
 			used_tree_idxs.update({idx1,idx2})
 			# compute num shared leaves between newtree and all existing but not used trees and add to dictionary
 			trees.append(new_t)
-			leaf_sets.append(leafSet(new_t))
+			leaf_sets.append(leaf_set(new_t))
 			for l in range(n+k):
 				if l in used_tree_idxs:
 					continue
@@ -55,7 +55,9 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 	else:
 		pass
 
-
+	# nx.draw(trees[2*n-2], with_labels = True)
+	# plt.show()
+	return trees[2*n-2]
 
 
 """
@@ -66,8 +68,8 @@ def max_bisup_tree_two(T1, T2):
 		print("Input T1 for max_bisup_tree method is not a tree.")
 	elif not alg.is_tree(T2):
 		print("Input T2 for max_bisup_tree method is not a tree.")  
-	S1 = leafSet(T1)
-	S2 = leafSet(T2)
+	S1 = leaf_set(T1)
+	S2 = leaf_set(T2)
 	S = S1 | S2
 	X = S1 & S2
 
@@ -335,7 +337,7 @@ def arbitrary_refine(T):
 """
 Computes the set of all leaves of T.
 """
-def leafSet(T):
+def leaf_set(T):
 	return set([v for v,d in T.degree() if d == 1])
 
 
@@ -405,7 +407,7 @@ Returns the set of bipartitions of the tree T restricted to leaves in X.
 def bipartitions(T, X = None):
 	# if X is not given, set it to the whole leaf set 
 	if X is None:
-		X = leafSet(T)
+		X = leaf_set(T)
 	# iterate through all edges and add the bipartition induced by that edge if the bipartition is not None
 	bipartitions = set()
 	for e in T.edges():
@@ -511,19 +513,19 @@ def edges_of_bipartition(T, pi):
 
 
 
-def main():
-	T1= nx.Graph()
-	T1.add_edges_from([('a','ab'),('b','ab'),('c','abcdm'),('ab','abcdm'),('d','abcdm'),('m','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
-	# nx.draw(T1, with_labels = True)
-	# plt.show()
-	T2 = nx.Graph()
-	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
-	T3 = nx.Graph()
-	T3.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('g','dg'),('d','dg'),('dg','dgef'),('abc','dgef')])
-	T4 = nx.Graph()
-	T4.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgh12ef'),('d','dh'),('h','dh'),('dh','dgh12'),('g','g12'),('g12','dgh12'),('g12','12'),('dgh12','dgh12ef'),('abc','dgh12ef')])
-	max_bisup_tree_many([T1,T2,T3,T4])
-	print(ordered_subtrees(T1,({'a','b','c'},{'e','f'})))
+# def main():
+	# T1= nx.Graph()
+	# T1.add_edges_from([('a','ab'),('b','ab'),('c','abcdm'),('ab','abcdm'),('d','abcdm'),('m','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
+	# # nx.draw(T1, with_labels = True)
+	# # plt.show()
+	# T2 = nx.Graph()
+	# T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
+	# T3 = nx.Graph()
+	# T3.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('g','dg'),('d','dg'),('dg','dgef'),('abc','dgef')])
+	# T4 = nx.Graph()
+	# T4.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgh12ef'),('d','dh'),('h','dh'),('dh','dgh12'),('g','g12'),('g12','dgh12'),('g12','12'),('dgh12','dgh12ef'),('abc','dgh12ef')])
+	# max_bisup_tree_many([T1,T2,T3,T4])
+	# print(ordered_subtrees(T1,({'a','b','c'},{'e','f'})))
 	# T5 = nx.Graph()
 	# T5.add_edges_from([('a','ab'),('b','ab'),('ab','abch'),('c','abch'),('h','abch'),('d','defgi'),('e','defgi'),('f','defgi'),('g','defgi'),('i','defgi'),('abch','defgi')])
 	# arbitrary_refine(T5)
@@ -561,5 +563,5 @@ def main():
 	# nx.draw(T2, with_labels = True)
 	# plt.show()
 
-if __name__ == '__main__':
-	main()
+# if __name__ == '__main__':
+# 	main()
