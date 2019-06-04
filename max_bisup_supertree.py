@@ -283,15 +283,19 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
 			for c in components:
 				# print("checking comp ", c)
 				if n in c:
+					# if the component also contains a vertex from A, connect it to va
 					# print("found containing comp")
 					if len(c & A) != 0:
 						# print("added edge to va")
 						T.add_edge(n, va)
+					# else if the component also contains a vertex from B, connect it to vb
 					elif len(c & B) != 0:
 						# print("added edge to vb")
 						T.add_edge(n, vb)
+					# ow, n is the root of an extra subtree attached to v because it doesn't matter, 
+					# so we can connect to either va or vb, we always connect to va
 					else:
-						print("something is wrong")
+						T.add_edge(n,va)
 					break
 
 		# delete original as a key in vtx_bipars
@@ -513,13 +517,15 @@ def edges_of_bipartition(T, pi):
 
 
 
-# def main():
-	# T1= nx.Graph()
-	# T1.add_edges_from([('a','ab'),('b','ab'),('c','abcdm'),('ab','abcdm'),('d','abcdm'),('m','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
-	# # nx.draw(T1, with_labels = True)
-	# # plt.show()
-	# T2 = nx.Graph()
-	# T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
+def main():
+	T1= nx.Graph()
+	T1.add_edges_from([('a','ab'),('b','ab'),('c','cd'),('d','cd'),('m','cdm'),('cd','cdm'),('ab','abcdm'),('cdm','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
+	plt.subplot(1, 3, 1)
+	nx.draw(T1, with_labels = True)
+	T2 = nx.Graph()
+	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
+	plt.subplot(1, 3, 2)
+	nx.draw(T2, with_labels = True)
 	# T3 = nx.Graph()
 	# T3.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('g','dg'),('d','dg'),('dg','dgef'),('abc','dgef')])
 	# T4 = nx.Graph()
@@ -531,7 +537,10 @@ def edges_of_bipartition(T, pi):
 	# arbitrary_refine(T5)
 	# nx.draw(T5,with_labels=True)
 	# plt.show()
-	# max_bisup_tree_two(T1,T2)	
+	T = max_bisup_tree_two(T1,T2)
+	plt.subplot(1, 3, 3)
+	nx.draw(T,with_labels=True)
+	plt.show()	
 	# ordered_subtrees(T2, ({'e','h'},{'a','b'}))
 	# C1 = bipartitions(T1, {'a','b', 'd','e','f'})
 	# C2 = bipartitions(T2, {'a','b', 'd','e','f'})
@@ -563,5 +572,5 @@ def edges_of_bipartition(T, pi):
 	# nx.draw(T2, with_labels = True)
 	# plt.show()
 
-# if __name__ == '__main__':
-# 	main()
+if __name__ == '__main__':
+ 	main()

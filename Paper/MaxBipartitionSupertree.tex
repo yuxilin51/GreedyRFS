@@ -1,0 +1,171 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb,amsthm, mathtools,xcolor, algorithm, algorithmicx, dsfont, cite}
+\usepackage[noend]{algpseudocode}
+
+\newcommand{\note}[1]{\textcolor{red}{#1}}
+\newcommand{\opt}{\mathrm{OPT}}
+\newcommand{\In}{\mathrm{In}}
+\newcommand{\triv}{\mathrm{Triv}}
+\newcommand{\ntriv}{\mathrm{NonTriv}}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\RF}{RF}
+\newcommand{\bs}{bisup}
+\DeclareMathOperator*{\extra}{Extra}
+\setlength\parindent{0pt}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+
+\title{Minimum Robinson-Foulds Distance Supertree}
+\author{Xilin Yu, Thien Le, Sarah Christensen,  Erin Molloy, Tandy Warnow}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+
+
+
+
+
+\section{The Maximum Bipartition Support Supertree Problem} \label{sec:alg}
+\subsection{Terminology and Preliminary}
+
+Throughout the paper, we consider only unrooted trees. For any tree $T$, let $V(T)$, $E(T)$, and $L(T)$ denote the vertex set, the edge set, and the leaf set of $T$, respectively. For any $v\in V(T)$, let $N_T(v)$  A tree is \textit{fully resolved} if every non-leaf node has degree $3$. Let $\mathcal{T}_S$ denote the set of all fully resolved trees on leaf set $S$. In any tree $T$, each edge $e$ induces a bipartition $\pi_e := A|B$ of the leaf set, where $A$ and $B$ are the leaves in the two components of $T-e$, respectively. A bipartition $A|B$ is non-trivial if both sides have size at least $2$. For a tree $T$, $C(T) := \{\pi_e \mid e\in E(T)\}$ denotes the set of all bipartitions of $T$. For a fully resolved tree with $n$ leaves, $C(T)$ contains $2n-3$ bipartitions, exactly $n-3$ of which are non-trivial. A tree $T'$ is a \textit{refinement} of $T$ if $T$ can be obtained from $T'$ by contracting a set of edges. Equivalently, $T'$ is a refinement of $T$ if and only if $C(T) \subseteq C(T')$.\\
+
+Two bipartitions $\pi_1$ and $\pi_2$ of the same leaf set are \textit{compatible} if and only if there exists a tree $T$ such that $\pi_1, \pi_2 \in C(T)$. The following theorem and corollary give other categorizations of compatibility.
+\begin{theorem}[Theorem 2.20 of \cite{warnow2017computational}]\label{thm:compatibility}
+    A pair of bipartitions $A|B$ and $A'|B'$ of the same set is compatible if and only if at least one of the four pairwise intersections $A \cap A'$, $A\cap B'$, $B\cap A'$, $B \cap B'$ is empty. 
+\end{theorem}
+
+\begin{corollary}\label{cor:compatibility}
+     A pair of bipartitions $A|B$ and $A'|B'$ of the same set is compatible if and only if one side of $A|B$ is a subset of one side of $A'|B'$.
+\end{corollary}
+\medskip
+
+A tree $T$ restricted to a subset $R$ of its leaf set, denoted $T|_R$, is the minimal subtree of $T$ spanning $R$ with nodes of degree two suppressed. A bipartition $\pi = A|B$ restricted to a subset $R \subseteq A\cup B$ is $\pi|_R = A\cap R | B\cap R$. We have the following intuitive lemma with its proof in the appendix.
+
+\begin{lemma}\label{lem:bipar_restrict_edge}
+    Let $T$ be a tree with leaf set $S$ and let $\pi = A|B \in C(T)$ be a bipartition induced by $e \in E(T)$. Let $R \subseteq S$.
+    \begin{enumerate}
+        \item If $R \cap A \neq \emptyset$ and $R \cap B \neq \emptyset$, then for any $\pi' \in C(T|_R)$ induced by $e' \in E(T|_R)$, $\pi|_R = \pi'$ if and only if $e \in P(e')$.
+    \end{enumerate}
+\end{lemma}
+
+
+\begin{definition}
+For two trees $T$, $T'$ with the same leaf set, the \textit{bipartition support} of them is $\bs(T, T') := |C(T) \cap C(T')|$.
+\end{definition}
+
+Bipartition support measures the similarity between the topology of the trees.\\
+
+\subsection{Problem Statement}
+Let $T_1$ and $T_2$ be two fully resolved trees on leaf sets $S_1$ and $S_2$, respectively, such that $X := S_1 \cap S_2 \neq \emptyset$. Let $S := S_1 \cup S_2$. The Maximum Bipartition Support Supertree problem, abbreviated \textsc{Max-Bisup-Supertree}, finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to $T_1$ and $T_2$. That is, 
+\begin{align*}
+    T^* &= \argmax_{T \in \mathcal{T}_S} \bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)\\ 
+        &= \argmax_{T \in \mathcal{T}_S} |C(T|_{S_1})\cap C(T_1)| + |C(T|_{S_2}) \cap C(T_2)|.
+\end{align*}
+We call $\bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)$ the support score of $T$ when $T_1$ and $T_2$ are clear from context.
+
+\subsection{Algorithm}
+
+We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
+
+We define a weight function $w:\Pi \to \mathbb{N}_{\ge 0}$ such that for any bipartition $\pi$ of $X$, $w(\pi) = w(e_1) + w(e_2)$, where $e_i$ induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$. If for any $i \in \{1,2\}$, no $e_i$ exists that induces $\pi$ in $T_i|_X$, then we use $w(e_i) = 0$.\\
+
+For each $i \in \{1,2\}$ and each $e \in E(T_i|_X)$, let $\In(e)$ be the set of internal nodes of $P(e)$. For each $v \in \In(e)$, let $L(v)$ be the set of leaves in $S_i \backslash X$ whose connecting path to the backbone tree $T_i|_X$ goes through $v$ and let $T(v)$ be the minimal subtree spanning $L(v)$ in $T_i$. We say $T(v)$ is an extra subtree attached to $v$. Consider $T(v)$ rooted at the node $u$ which is the neighbor of $v$ in $T(v)$. Let $\mathcal{T}(e) := \{T(v) \mid v \in \In(e)\}$. Then $\mathcal{T}(e)$ is the set of extra subtrees attached to internal nodes of $P(e)$ in $T_i$. We note that $|\mathcal{T}(e)| = |\In(e)| = w(e)-1$. For any bipartition $\pi \in C(T_1|_X) \cup C(T_2|_X)$, we denote $\mathcal{T}(\pi) := \mathcal{T}(e_1) \cup \mathcal{T}(e_2)$, where $e_i$ is the edge that induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$ if $\pi \in C(T_i|_X)$. Let $\extra(T_i) := \bigcup_{e \in E(T_i|_X)} \mathcal{T}(e)$. Then $\extra := \extra(T_1) \cup \extra(T_2)$ denotes the set of all extra subtrees in $T_1$ and $T_2$. \note{figure to help}
+
+
+\begin{algorithm}
+    \caption{Max-BiSup Supertree}
+    \label{alg:maxbisup}
+    \textbf{Input}: two fully resolved trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$\\
+    \textbf{Output}: a fully resolved supertree $T$ on leaf set $S = S_1 \cup S_2$ that maximizes the support score 
+    \begin{algorithmic}[1]
+        \State compute $C(T_1|_X)$ and $C(T_2|_X)$
+        \For{each $\pi \in C(T_1|_X) \cup C(T_2|_X)$}
+            \State compute $\mathcal{T}(\pi)$ and $w(\pi)$
+        \EndFor
+        \State construct $T$ by having a star of leaf set $X$ with center vertex $\hat{v}$ and connecting the root of each $t \in \extra$ to $\hat{v}$        
+        \For{each $\pi \in \triv$}
+            \State $T \gets $ Refine-Triv($T, \pi, \mathcal{T}(\pi)$)
+        \EndFor
+        \State construct the incompatibility graph $G = (V_1 \cup V_2, E)$, where $V_1 = C(T_1|_X)- C(T_2|_X)$ and $V_2 = C(T_2|_X) - C(T_1|_X)$, and $E = \{(\pi, \pi') \mid \pi \in V_1, \pi' \in V_2$, $\pi$ is not compatible with $\pi'\}$
+        \State compute the maximum weight independent set $I$ in $G$ with weight $w$
+        \State let $H(\hat{v}) = \ntriv \cap (C(T_1|_X) \cup C(T_2|_X))$
+        \State let $R(\hat{v}) = \emptyset$
+        \For{each $\pi \in \ntriv \cap (C(T_1|_X) \cup C(T_2|_X))$} 
+            \State $sv(\pi) = \hat{v}$
+            \State add the root of each $t\in \mathcal{T}(\pi)$ to $R(v)$
+        \EndFor
+        \For{each $\pi \in \ntriv \cap (I \cup (C(T_1|_X) \cap C(T_2|_X)))$}
+            \State $T \gets $ Refine($T, \pi, H, sv$)
+        \EndFor
+        \State refine $T$ arbitrarily at polytomies until it is fully resolved
+        \State return $T$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Refine-Triv}
+    \label{alg:trivial_refine}
+    \begin{algorithmic}
+    \State
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Refine}
+    \label{alg:refine}
+    \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a bipartition $\pi = A|B$ of $X$, a dictionary $H$, a dictionary $sv$\\
+    \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $\pi \in C(T'|_X)$ 
+    \begin{algorithmic}[1]
+        \State $v \gets sv(\pi)$
+        \State compute $N_A:= \{u \in N_T(v) \mid \text{$\exists a \in A$ such that $u$ can reach $a$ in $T-v$}\}$ and $N_B:= \{u \in N_T(v) \mid \text{$\exists b \in B$ such that $u$ can reach $b$ in $T-v$}\}$.
+        \State $V(T) \gets V(T) \cup \{v_a, v_b\}$, $E(T) \gets E(T) \cup \{(v_a,v_b)\}$
+        \State $H(v_a) \gets \emptyset, H(v_b) \gets \emptyset$
+        \For{each $u \in N_A \cup N_B$} 
+            \If{$u \in N_A$} connect $u$ to $v_a$
+            \Else{} connect $u$ to $v_b$
+            \EndIf
+        \EndFor
+        \State detach all extra subtrees in $\mathcal{T}(\pi)$ from $v$ and attach them onto $(v_a,v_b)$ such that the subtrees from $\mathcal{T}(e_1)$ and subtrees from $\mathcal{T}(e_2)$ are side by side and each group respects the ordering of subtrees in $T_i$
+        \For{each bipartition $\pi'= A'|B' \in H(v)$ such that $\pi' \neq \pi$}
+            \State detach all extra subtrees in $\mathcal{T}(\pi')$ from $v$ 
+            \If{$A' \subseteq A$ or $B' \subseteq A$}
+                \State $sv(\pi') = v_a$ and $H(v_a) \gets H(v_a) + \pi'$
+                \State attach all extra subtrees in $\mathcal{T}(\pi')$ to $v_a$
+            \ElsIf{$A' \subseteq B$ or $B' \subseteq B$}
+                \State $sv(\pi') = v_b$ and $H(v_b) \gets H(v_b) + \pi'$
+                \State attach all extra subtrees in $\mathcal{T}(\pi')$ to $v_b$
+            \Else{} 
+                \State discard $\pi'$ and attach all extra subtrees in $\mathcal{T}(\pi')$ to either $v_a$ or $v_b$ 
+            \EndIf
+        \EndFor
+        \For{each remaining extra subtree attached to $v$}
+            \State detach it from $v$ and attach it to either $v_a$ or $v_b$
+        \EndFor
+        \State delete $v$ and incident edges from $T$
+        \State return the resulting tree $T'$
+    \end{algorithmic}
+\end{algorithm}
+
+\appendix
+\section{Proofs from Section \ref{sec:alg}}
+
+Proof of Lemma \ref{lem:bipar_restrict_edge}
+\begin{proof}
+Let $T_R$ be the minimal subtree of $T$ that spans $R$. It follows that the leaf set of $T_R$ is $R$ and $T|_R$ is obtained from $T_R$ by suppressing all degree-two nodes. Let $\pi' = A'|B'$.
+By definition of $e$ inducing $\pi = A|B$, the vertices of $A$ are all disconnected from vertices of $B$ in $T-e$. If $R\cap A \neq \emptyset$ and $R\cap B \neq \emptyset$, then $e$ is necessary to connect $R\cap A$ with $R \cap B$, and thus $e$ must be in any tree spanning $R$ and in particular $e \in E(T_R)$. Since $T_R$ is a subgraph of $T$, the two components in $T_R-e$ are subgraphs of the two components in $T-e$. Thus, the leaves of the two components in $T_R-e$ are exactly $R\cap A$ and $R\cap B$. We also know that suppressing degree-two nodes does not change the connectivity between any leaves so the leaves of the two components in $T_R - P(e')$ (with vertices on the path also deleted) are the same as the leaves of the two components in $T|_R - e'$, which are $A'$ and $B'$. If $e \in P(e')$, since all internal nodes of $P(e')$ have degree two with both incident edges on $P(e')$, there is no leaf which exists in any of the two components in $T_R - e$ but does not exists in the corresponding component in $T_R-P(e')$. Therefore, $\pi|_R = R\cap A|R\cap B = A'|B' = \pi'$. If $e \notin P(e')$, then since $e \in E(T_R)$, there must exists $e'' \in E(T|_R)$ such that $e'' \neq e'$ and $e \in P(e'')$. By the arguement above, $\pi|_R = \pi''$ where $\pi''$ is the bipartition induced by $e''$ in $T|_R$. Since $e'' \neq e'$, we know $\pi' \neq \pi''$ and thus $\pi|_R \neq \pi'$. This concludes our proof that $\pi|_R = \pi'$ if and only if $e \in P(e')$. 
+\end{proof}
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
