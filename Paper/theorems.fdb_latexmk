@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex MaxBipartitionSupertree"] 1559684699 "MaxBipartitionSupertree.aux" "MaxBipartitionSupertree.bbl" "MaxBipartitionSupertree" 1559684700
+["bibtex theorems"] 1559679178 "theorems.aux" "theorems.bbl" "theorems" 1559679493
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1480098433 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "MaxBipartitionSupertree.aux" 1559684700 1919 ea56e6158279fcf7d83d891420d7335d ""
   "references.bib" 1559618611 216 a5d07483ea8ab35cb7ee504aa0b917f2 ""
+  "theorems.aux" 1559679493 524 34482fff5b5907bad97cee290a96f2f9 ""
   (generated)
-  "MaxBipartitionSupertree.blg"
-  "MaxBipartitionSupertree.bbl"
-["pdflatex"] 1559684700 "MaxBipartitionSupertree.tex" "MaxBipartitionSupertree.pdf" "MaxBipartitionSupertree" 1559684700
+  "theorems.blg"
+  "theorems.bbl"
+["pdflatex"] 1559679493 "theorems.tex" "theorems.pdf" "theorems" 1559679493
   "/etc/texmf/web2c/texmf.cnf" 1559614595 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
@@ -97,10 +97,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1551226139 34566 ab5be96bde1a5acfd4f881dbe566b5fb ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1559616188 3236060 fd056e42459c13cbcb0cc6e0a7cae8d4 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1559616211 4224350 9fb57652bb857c4551833427a14e2c5d ""
-  "MaxBipartitionSupertree.aux" 1559684700 1919 ea56e6158279fcf7d83d891420d7335d ""
-  "MaxBipartitionSupertree.bbl" 1559684700 253 a28cfeccbb28cc19b2e9b9fd125aa517 "bibtex MaxBipartitionSupertree"
-  "MaxBipartitionSupertree.tex" 1559684699 25399 61065b5816226bc5c7a99ae8a53076fc ""
+  "theorems.aux" 1559679493 524 34482fff5b5907bad97cee290a96f2f9 ""
+  "theorems.bbl" 1559679178 253 a28cfeccbb28cc19b2e9b9fd125aa517 "bibtex theorems"
+  "theorems.tex" 1559679492 11164 590e6978c242b98e6bcc3180a35f3661 ""
   (generated)
-  "MaxBipartitionSupertree.aux"
-  "MaxBipartitionSupertree.pdf"
-  "MaxBipartitionSupertree.log"
+  "theorems.aux"
+  "theorems.pdf"
+  "theorems.log"

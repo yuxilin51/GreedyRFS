@@ -1,6 +1,6 @@
 # Author: Xilin Yu @ Apr 17 2019
 # Given two input trees T1 and T2 with overlapping leaf sets (in newick form), finds the supertree T* on all leaves that maximizes the bipartitions shared by T* and T1,T2.
-
+import dendropy as dd
 from random import random
 import math
 import networkx as nx
@@ -14,6 +14,7 @@ Computes an approximate maximum bipartition support supertree of the list of giv
 """
 def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 	n = len(trees)
+	print("merging ",str(n)," trees")
 	used_tree_idxs = set()
 	if ordering is "max_shared_leaves":
 		leaf_sets = [leaf_set(t) for t in trees]
@@ -24,6 +25,9 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 		for k in range(n-1):
 			idx1,idx2 = max(shared_leaves, key = shared_leaves.get)
 			new_t = max_bisup_tree_two(trees[idx1],trees[idx2])
+			print("new tree is a tree:", nx.is_tree(new_t))
+			new_t_dd = nx_tree_to_dd_tree(new_t)
+			print("new tree is ", new_t_dd.as_string(schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True))
 			# nx.draw(new_t, with_labels = True)
 			# plt.show()
 			used_tree_idxs.update({idx1,idx2})
@@ -64,6 +68,7 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 Computes and returns the maximum bipartition support supertree of the two given trees
 """
 def max_bisup_tree_two(T1, T2):
+	print("start merging two trees")
 	if not nx.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
 	elif not alg.is_tree(T2):
@@ -515,62 +520,88 @@ def edges_of_bipartition(T, pi):
 	return edges
 
 
+"""
+Turns a networkx tree into a dendropy tree
+"""
+def nx_tree_to_dd_tree(T):
 
+    
+    # build dict from string label to dendropy node   
+    label_node = dict()
+    for v in T.nodes():
+        dd_node = dd.Node(label = v)
+        label_node[v] = dd_node
+    
+    # root tree at random node
+    root = next(iter(T.nodes()))
+    dd_tree = dd.Tree()
+    dd_tree.seed_node = label_node[root]
 
-def main():
-	T1= nx.Graph()
-	T1.add_edges_from([('a','ab'),('b','ab'),('c','cd'),('d','cd'),('m','cdm'),('cd','cdm'),('ab','abcdm'),('cdm','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
-	plt.subplot(1, 3, 1)
-	nx.draw(T1, with_labels = True)
-	T2 = nx.Graph()
-	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
-	plt.subplot(1, 3, 2)
-	nx.draw(T2, with_labels = True)
-	# T3 = nx.Graph()
-	# T3.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('g','dg'),('d','dg'),('dg','dgef'),('abc','dgef')])
-	# T4 = nx.Graph()
-	# T4.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgh12ef'),('d','dh'),('h','dh'),('dh','dgh12'),('g','g12'),('g12','dgh12'),('g12','12'),('dgh12','dgh12ef'),('abc','dgh12ef')])
-	# max_bisup_tree_many([T1,T2,T3,T4])
-	# print(ordered_subtrees(T1,({'a','b','c'},{'e','f'})))
-	# T5 = nx.Graph()
-	# T5.add_edges_from([('a','ab'),('b','ab'),('ab','abch'),('c','abch'),('h','abch'),('d','defgi'),('e','defgi'),('f','defgi'),('g','defgi'),('i','defgi'),('abch','defgi')])
-	# arbitrary_refine(T5)
-	# nx.draw(T5,with_labels=True)
-	# plt.show()
-	T = max_bisup_tree_two(T1,T2)
-	plt.subplot(1, 3, 3)
-	nx.draw(T,with_labels=True)
-	plt.show()	
-	# ordered_subtrees(T2, ({'e','h'},{'a','b'}))
-	# C1 = bipartitions(T1, {'a','b', 'd','e','f'})
-	# C2 = bipartitions(T2, {'a','b', 'd','e','f'})
-	# print("union ", bipar_set_union(C1, C2))
-	# print("difference ", bipar_set_difference(C1,C2))
-	# for pi in bipartitions(T1, {'a','b', 'd','e','f'}):
-	# 	for pi2 in bipartitions(T2,{'a','b', 'd','e','f'}):
-	# 		print(pi," and ",pi2," are compatible: ",bipartitions_are_compatible(pi,pi2))
-	# # balanced = ((((),()),()),(((),()),((),()))) 
-	# T2= nx.from_nested_tuple(balanced)
+    # add the edges in the tree
+    for v,successors in nx.bfs_successors(T, root):
+        dd_node = label_node[v]
+        for s in successors:
+            dd_child = label_node[s]
+            dd_node.add_child(dd_child)
 
-	# extra_trees = extra_subtrees(T1, ({'a','c'},{'e','f'}))
-	# b1 = bipartitions(T)
-	# b2 = non_trivial_bipartitions(T,{'a','d','e','f'})
-	# print(b1)
-	# print(b2)
-	# b3 = restrict_bipartition(bipartition(T,('ab','abc')),{'a','b','d','e'})
-	# b4 = restrict_bipartition(bipartition(T,('abc','dgef')),{'a','b','d','e'})
-	# b5 = restrict_bipartition(bipartition(T,('ab','abc')),{'a','d','c','f'})
-	# print(same_bipartition(b3,b4))
-	# print(same_bipartition(b3,b5))
-	# print(same_bipartition(None,None))
-	# print(edges_of_bipartition(T,({'a','b'},{'e','f'})))
-	# for t in extra_subtrees(T,({'a','b'},{'e','f'})):
-	# 	print("extra subtree nodes", t.node())
-	# 	print("extra subtree edges", t.edges())
-	# nx.draw(T1, with_labels = True)
-	# plt.show()
-	# nx.draw(T2, with_labels = True)
-	# plt.show()
+    # nx.draw(T, with_labels = True)
+    # plt.show()
+    return dd_tree
 
-if __name__ == '__main__':
- 	main()
+# def main():
+# 	T1= nx.Graph()
+# 	T1.add_edges_from([('a','ab'),('b','ab'),('c','cd'),('d','cd'),('m','cdm'),('cd','cdm'),('ab','abcdm'),('cdm','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
+# 	plt.subplot(1, 3, 1)
+# 	nx.draw(T1, with_labels = True)
+# 	T2 = nx.Graph()
+# 	T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
+# 	plt.subplot(1, 3, 2)
+# 	nx.draw(T2, with_labels = True)
+# 	# T3 = nx.Graph()
+# 	# T3.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('g','dg'),('d','dg'),('dg','dgef'),('abc','dgef')])
+# 	# T4 = nx.Graph()
+# 	# T4.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgh12ef'),('d','dh'),('h','dh'),('dh','dgh12'),('g','g12'),('g12','dgh12'),('g12','12'),('dgh12','dgh12ef'),('abc','dgh12ef')])
+# 	# max_bisup_tree_many([T1,T2,T3,T4])
+# 	# print(ordered_subtrees(T1,({'a','b','c'},{'e','f'})))
+# 	# T5 = nx.Graph()
+# 	# T5.add_edges_from([('a','ab'),('b','ab'),('ab','abch'),('c','abch'),('h','abch'),('d','defgi'),('e','defgi'),('f','defgi'),('g','defgi'),('i','defgi'),('abch','defgi')])
+# 	# arbitrary_refine(T5)
+# 	# nx.draw(T5,with_labels=True)
+# 	# plt.show()
+# 	T = max_bisup_tree_two(T1,T2)
+# 	plt.subplot(1, 3, 3)
+# 	nx.draw(T,with_labels=True)
+# 	plt.show()	
+# 	# ordered_subtrees(T2, ({'e','h'},{'a','b'}))
+# 	# C1 = bipartitions(T1, {'a','b', 'd','e','f'})
+# 	# C2 = bipartitions(T2, {'a','b', 'd','e','f'})
+# 	# print("union ", bipar_set_union(C1, C2))
+# 	# print("difference ", bipar_set_difference(C1,C2))
+# 	# for pi in bipartitions(T1, {'a','b', 'd','e','f'}):
+# 	# 	for pi2 in bipartitions(T2,{'a','b', 'd','e','f'}):
+# 	# 		print(pi," and ",pi2," are compatible: ",bipartitions_are_compatible(pi,pi2))
+# 	# # balanced = ((((),()),()),(((),()),((),()))) 
+# 	# T2= nx.from_nested_tuple(balanced)
+
+# 	# extra_trees = extra_subtrees(T1, ({'a','c'},{'e','f'}))
+# 	# b1 = bipartitions(T)
+# 	# b2 = non_trivial_bipartitions(T,{'a','d','e','f'})
+# 	# print(b1)
+# 	# print(b2)
+# 	# b3 = restrict_bipartition(bipartition(T,('ab','abc')),{'a','b','d','e'})
+# 	# b4 = restrict_bipartition(bipartition(T,('abc','dgef')),{'a','b','d','e'})
+# 	# b5 = restrict_bipartition(bipartition(T,('ab','abc')),{'a','d','c','f'})
+# 	# print(same_bipartition(b3,b4))
+# 	# print(same_bipartition(b3,b5))
+# 	# print(same_bipartition(None,None))
+# 	# print(edges_of_bipartition(T,({'a','b'},{'e','f'})))
+# 	# for t in extra_subtrees(T,({'a','b'},{'e','f'})):
+# 	# 	print("extra subtree nodes", t.node())
+# 	# 	print("extra subtree edges", t.edges())
+# 	# nx.draw(T1, with_labels = True)
+# 	# plt.show()
+# 	# nx.draw(T2, with_labels = True)
+# 	# plt.show()
+
+# if __name__ == '__main__':
+#  	main()
