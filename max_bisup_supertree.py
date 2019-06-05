@@ -315,11 +315,14 @@ Refine the given tree at any node with degree > 3 arbitrarily
 (except that both copies of the node need to have at least 2 neighbors other than each other)
 """
 def arbitrary_refine(T):
+	print("Need to refine tree arbitrarily")
 	polytomies = {v for v,d in T.degree() if d > 3}
 	while len(polytomies) != 0:
+
 		v = next(iter(polytomies))
 		va = v+'0'
 		vb = v+'1'
+		print("refines node v = ", v, " into va = ", va, " and vb = ", vb)
 		T.add_nodes_from([va,vb])
 		for n in T.neighbors(v):
 			if T.degree(va) < 2:

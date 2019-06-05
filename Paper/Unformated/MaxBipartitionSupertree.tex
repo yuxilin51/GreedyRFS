@@ -8,10 +8,9 @@
 \newcommand{\In}{\mathrm{In}}
 \newcommand{\triv}{\mathrm{Triv}}
 \newcommand{\ntriv}{\mathrm{NonTriv}}
+\newcommand{\bs}{\mathrm{bisup}}
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator*{\argmax}{argmax}
-\DeclareMathOperator*{\RF}{RF}
-\newcommand{\bs}{bisup}
 \DeclareMathOperator*{\extra}{Extra}
 \setlength\parindent{0pt}
 \newtheorem{theorem}{Theorem}
@@ -72,16 +71,21 @@ For two trees $T$, $T'$ with the same leaf set, the \textit{bipartition support}
 Bipartition support measures the similarity between the topology of the trees.\\
 
 \subsection{Problem Statement}
-Let $T_1$ and $T_2$ be two fully resolved trees on leaf sets $S_1$ and $S_2$, respectively, such that $X := S_1 \cap S_2 \neq \emptyset$. Let $S := S_1 \cup S_2$. The Maximum Bipartition Support Supertree problem, abbreviated \textsc{Max-Bisup-Supertree}, finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to $T_1$ and $T_2$. That is, 
+Let $T_1$ and $T_2$ be two fully resolved trees on leaf sets $S_1$ and $S_2$, respectively, such that $X := S_1 \cap S_2 \neq \emptyset$. Let $S := S_1 \cup S_2$. The maximum bipartition support supertree problem on two input trees, abbreviated \textsc{Max-Bisup-Supertree-$2$}, finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to $T_1$ and $T_2$. That is, 
 \begin{align*}
     T^* &= \argmax_{T \in \mathcal{T}_S} \bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)\\ 
         &= \argmax_{T \in \mathcal{T}_S} |C(T|_{S_1})\cap C(T_1)| + |C(T|_{S_2}) \cap C(T_2)|.
 \end{align*}
-We call $\bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)$ the support score of $T$ when $T_1$ and $T_2$ are clear from context.
+We call $\bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)$ the support score of $T$ when $T_1$ and $T_2$ are clear from context.\\
+
+The more general maximum bipartition support supertree problem on a set of $N$ input trees, abbreviated \textsc{Max-Bisup-Supertree-$N$}, takes in a set of input trees $T_1,T_2,\dots,T_N$ with leaf sets $S_1,S_2,\dots,S_N$, respectively. \textsc{Max-Bisup-Supertree-$N$} finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to every input tree. That is,
+\begin{align*}
+    T^* &= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} \bs(T|_{S_i}, T_i) \\ 
+        %&= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} |C(T|_{S_1})\cap C(T_i)|.
+\end{align*}
 
 \subsection{Algorithm}
-
-We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
+We present a polynomial time algorithm for \textsc{Max-Bisup-Supertree-$2$} in this subsection. We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
 
 We define a weight function $w:\Pi \to \mathbb{N}_{\ge 0}$ such that for any bipartition $\pi$ of $X$, $w(\pi) = w(e_1) + w(e_2)$, where $e_i$ induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$. If for any $i \in \{1,2\}$, no $e_i$ exists that induces $\pi$ in $T_i|_X$, then we use $w(e_i) = 0$.\\
 
@@ -173,8 +177,8 @@ Let $p_X(T)$ and $p_Y(T)$ (we omit the parameters $T_1$ and $T_2$ for brevity) b
     p_Y(T) &= |C(T|_{S_1}) \cap C(T_1) \cap \Pi_Y| + |C(T|_{S_2}) \cap C(T_2) \cap \Pi_Y|.
 \end{align*}
 
-\begin{claim}
-    If Algorithm \ref{alg:maxbisup} returns a tree $T$ such that $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, then Algorithm \ref{alg:maxbisup} solves \textsc{Max-Bisup-Supertree} correctly.
+\begin{claim} \label{claim:sum_score_solves_prob}
+    If Algorithm \ref{alg:maxbisup} returns a tree $T$ such that $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, then Algorithm \ref{alg:maxbisup} solves \textsc{Max-Bisup-Supertree-$2$} correctly.
 \end{claim}
 \begin{proof}
 By definition of support score, any bipartition can only contribute to the support score if it is in $C(T_1) \cup C(T_2)$. It follows by definition of $\Pi_X$ and $\Pi_Y$ that $\Pi_X$ and $\Pi_Y$ is a disjoint decomposition of $C(T_1) \cup C(T_2)$. Thus, the support score of $T$ equals $p_X(T) + p_Y(T)$ for any tree $T$ on leaf set $S$. Then if $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, $T$ achieves the maximum support score among all trees of leaf set $S$, in particular, it achieves the maximum support score among all trees in $\mathcal{T}_S$.
@@ -256,7 +260,12 @@ Therefore, it is enough for us to show that Algorithm \ref{alg:maxbisup} finds a
 
 
 \begin{lemma}\label{lem:refine_achieves_weight}
+Let $T$ be a tree from Algorithm \ref{alg:maxbisup} before a refinement step. Let $\pi = A|B \in \ntriv \cap (I \cup (C(T_1|_X)\cap C(T_2|_X)))$. Let $T'$ be a refinement of $T$ obtained from running Algorithm \ref{alg:refine} on $T$ and $\pi$, with the auxiliary data structures $H$, $sv$, and $\mathcal{T}$. Then, $p_X(T') - p_X(T) = w(\pi)$. 
 \end{lemma}
+\begin{proof}
+The algorithm makes sure that $\pi \notin C(T|_X)$ and all bipartitions in $C(T|_X)$ are compatible with $\pi$
+\end{proof}
+
 
 Let $G$ be the incompatibility graph defined in Algorithm \ref{alg:maxbisup} and $I$ be the maximum weight independent set in $G$ with weight function $w$. Let $G'= (V_1' \cup V_2',E')$ be another incompatibility graph such that $V_1' = C(T_1|_X)$ and $V_2' = C(T_2|_X)$, and $E' = \{(\pi, \pi') \mid \pi \in V_1', \pi' \in V_2'$, $\pi$ is not compatible with $\pi'\}$.  Let $I' := I \cup (C(T_1|_X )\cap C(T_2|_X))$.
 
@@ -274,19 +283,21 @@ Let $G$ be the incompatibility graph defined in Algorithm \ref{alg:maxbisup} and
 then $p_X(T^*)= \sum_{\pi \in I} w(\pi) + \sum_{\pi \in (C(T_1|_X )\cap C(T_2|_X))} w(\pi) = \sum_{\pi \in I'}w(\pi)$.
 \end{proof}
 
-
-\begin{corollary}\label{cor:maximization}
-    Let $T^*$ be the tree defined in Algorithm \ref{alg:maxbisup}, $p_X(T^*) \ge p_X(T)$ for any tree $T$ of leafset $S$.
-\end{corollary}
-
 \begin{theorem}\label{thm:correctness_alg}
-Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree} in $O(n^3)$ \note{(Checking this)} time.
+Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$} in $O(n^3)$ \note{(Checking this)} time.
 \end{theorem}
 \begin{proof}
+From Lemma \ref{lem:max_pY} and Claim \ref{claim:after_add_all_bipars} and Lemma \ref{lem:refine_only_increases}, we know that $T^*$ defined in Algorithm \ref{alg:maxbisup} satisfy that $p_X(T^*) \ge p_X(T)$ and $p_Y(T^*) \ge p_Y(T)$ for any tree with leaf set $S$. Then by Claim \ref{claim:sum_score_solves_prob}, Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$}. Next we analyze the running time of Algorithm \ref{alg:maxbisup}.
 \end{proof}
 
+\subsection{Hardness for \textsc{Max-Bisup-Supertree-$3$}}
+In this subsection, we show that \textsc{Max-Bisup-Supertree-$N$} is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \textsc{Max-Bisup-Supertree-$3$}. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
+
+
 \begin{theorem}\label{thm:hardness}
+\textsc{Max-Bisup-Supertree-$3$} is NP-hard.
 \end{theorem}
+
 
 \appendix
 \section{Proofs from Section \ref{sec:alg}}

@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex MaxBipartitionSupertree"] 1559684699 "MaxBipartitionSupertree.aux" "MaxBipartitionSupertree.bbl" "MaxBipartitionSupertree" 1559684700
+["bibtex MaxBipartitionSupertree"] 1559704784 "MaxBipartitionSupertree.aux" "MaxBipartitionSupertree.bbl" "MaxBipartitionSupertree" 1559704785
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1480098433 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "MaxBipartitionSupertree.aux" 1559684700 1919 ea56e6158279fcf7d83d891420d7335d ""
+  "MaxBipartitionSupertree.aux" 1559704784 2066 f548e4ebc20fe278e65a27397cabfa4e ""
   "references.bib" 1559618611 216 a5d07483ea8ab35cb7ee504aa0b917f2 ""
   (generated)
-  "MaxBipartitionSupertree.blg"
   "MaxBipartitionSupertree.bbl"
-["pdflatex"] 1559684700 "MaxBipartitionSupertree.tex" "MaxBipartitionSupertree.pdf" "MaxBipartitionSupertree" 1559684700
+  "MaxBipartitionSupertree.blg"
+["pdflatex"] 1559704784 "MaxBipartitionSupertree.tex" "MaxBipartitionSupertree.pdf" "MaxBipartitionSupertree" 1559704785
   "/etc/texmf/web2c/texmf.cnf" 1559614595 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
@@ -46,6 +46,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1480098733 32762 224316ccc9ad3ca0423a14971cfa7fc1 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1480098733 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1480098733 32569 5e5ddc8df908dea60932f3c484a54c0d ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb" 1480098733 32915 7bf7720c61a5b3a7ff25b0964421c9b6 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1480098733 32716 08e384dc442464e7285e891af9f45947 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1480098733 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1480098734 34694 ad62b13721ee8eda1dcc8993c8bd7041 ""
@@ -97,10 +98,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1551226139 34566 ab5be96bde1a5acfd4f881dbe566b5fb ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1559616188 3236060 fd056e42459c13cbcb0cc6e0a7cae8d4 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1559616211 4224350 9fb57652bb857c4551833427a14e2c5d ""
-  "MaxBipartitionSupertree.aux" 1559684700 1919 ea56e6158279fcf7d83d891420d7335d ""
-  "MaxBipartitionSupertree.bbl" 1559684700 253 a28cfeccbb28cc19b2e9b9fd125aa517 "bibtex MaxBipartitionSupertree"
-  "MaxBipartitionSupertree.tex" 1559684699 25399 61065b5816226bc5c7a99ae8a53076fc ""
+  "MaxBipartitionSupertree.aux" 1559704784 2066 f548e4ebc20fe278e65a27397cabfa4e ""
+  "MaxBipartitionSupertree.bbl" 1559704784 253 a28cfeccbb28cc19b2e9b9fd125aa517 "bibtex MaxBipartitionSupertree"
+  "MaxBipartitionSupertree.tex" 1559704783 27798 d6d3c63edf997497b854d09e654ec229 ""
   (generated)
-  "MaxBipartitionSupertree.aux"
-  "MaxBipartitionSupertree.pdf"
   "MaxBipartitionSupertree.log"
+  "MaxBipartitionSupertree.pdf"
+  "MaxBipartitionSupertree.aux"

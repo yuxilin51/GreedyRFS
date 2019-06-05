@@ -1,0 +1,658 @@
+%% BioMed_Central_Tex_Template_v1.06
+%%                                      %
+%  bmc_article.tex            ver: 1.06 %
+%                                       %
+
+%%IMPORTANT: do not delete the first line of this template
+%%It must be present to enable the BMC Submission system to
+%%recognise this template!!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                     %%
+%%  LaTeX template for BioMed Central  %%
+%%     journal article submissions     %%
+%%                                     %%
+%%          <8 June 2012>              %%
+%%                                     %%
+%%                                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% For instructions on how to fill out this Tex template           %%
+%% document please refer to Readme.html and the instructions for   %%
+%% authors page on the biomed central website                      %%
+%% http://www.biomedcentral.com/info/authors/                      %%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%% BioMed Central currently use the MikTex distribution of         %%
+%% TeX for Windows) of TeX and LaTeX.  This is available from      %%
+%% http://www.miktex.org                                           %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% additional documentclass options:
+%  [doublespacing]
+%  [linenumbers]   - put the line numbers on margins
+
+%%% loading packages, author definitions
+
+%\documentclass[twocolumn]{bmcart}% uncomment this for twocolumn layout and comment line below
+\documentclass{bmcart}
+
+%%% Load packages
+%\usepackage{amsthm,amsmath}
+%\RequirePackage{natbib}
+%\RequirePackage[authoryear]{natbib}% uncomment this for author-year bibliography
+%\RequirePackage{hyperref}
+\usepackage[utf8]{inputenc} %unicode support
+%\usepackage[applemac]{inputenc} %applemac support if unicode package fails
+%\usepackage[latin1]{inputenc} %UNIX support if unicode package fails
+\usepackage{amsmath, amsfonts, amssymb,amsthm, mathtools,xcolor, algorithm, algorithmicx, dsfont, cite}
+\usepackage[noend]{algpseudocode}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                             %%
+%%  If you wish to display your graphics for   %%
+%%  your own use using includegraphic or       %%
+%%  includegraphics, then comment out the      %%
+%%  following two lines of code.               %%
+%%  NB: These line *must* be included when     %%
+%%  submitting to BMC.                         %%
+%%  All figure files must be submitted as      %%
+%%  separate graphics through the BMC          %%
+%%  submission process, not included in the    %%
+%%  submitted article.                         %%
+%%                                             %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\def\includegraphic{}
+\def\includegraphics{}
+
+
+
+%%% Put your definitions there:
+\startlocaldefs
+\newcommand{\note}[1]{\textcolor{red}{#1}}
+\newcommand{\opt}{\mathrm{OPT}}
+\newcommand{\In}{\mathrm{In}}
+\newcommand{\triv}{\mathrm{Triv}}
+\newcommand{\ntriv}{\mathrm{NonTriv}}
+\newcommand{\bs}{\mathrm{bisup}}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\extra}{Extra}
+\setlength\parindent{0pt}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\endlocaldefs
+
+
+%%% Begin ...
+\begin{document}
+
+%%% Start of article front matter
+\begin{frontmatter}
+
+\begin{fmbox}
+\dochead{Research}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the title of your article here     %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{A sample article title}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the authors here                   %%
+%%                                          %%
+%% Specify information, if available,       %%
+%% in the form:                             %%
+%%   <key>={<id1>,<id2>}                    %%
+%%   <key>=                                 %%
+%% Comment or delete the keys which are     %%
+%% not used. Repeat \author command as much %%
+%% as required.                             %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\author[
+   addressref={aff1},                   % id's of addresses, e.g. {aff1,aff2}
+   %corref={aff1},                       % id of corresponding address, if any
+   %noteref={n1},                        % id's of article notes, if any
+   email={yuxilin51@gmail.com}   % email address
+]{\inits{XY}\fnm{Xilin} \snm{Yu}}
+\author[
+   addressref={aff1},
+   email={}
+]{\inits{TL}\fnm{Thien} \snm{Le}}
+
+\author[
+   addressref={aff1},
+   email={}
+]{\inits{SC}\fnm{Sarah} \snm{Christensen}}
+
+\author[
+   addressref={aff1},
+   email={}
+]{\inits{EM}\fnm{Erin} \snm{Molloy}}
+
+\author[
+   addressref={aff1},
+   email={}
+]{\inits{TW}\fnm{Tandy} \snm{Warnow}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter the authors' addresses here        %%
+%%                                          %%
+%% Repeat \address commands as much as      %%
+%% required.                                %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\address[id=aff1]{%                           % unique id
+  \orgname{Department of Computer Science, University of Illinois at Urbana-Champaign}, % university, etc
+  \street{201 N Goodwin},                     %
+  %\postcode{}                                % post or zip code
+  \city{Urbana},                              % city
+  \cny{US}                                    % country
+}
+\address[id=aff2]{%
+  \orgname{Marine Ecology Department, Institute of Marine Sciences Kiel},
+  \street{D\"{u}sternbrooker Weg 20},
+  \postcode{24105}
+  \city{Kiel},
+  \cny{Germany}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Enter short notes here                   %%
+%%                                          %%
+%% Short notes will be after addresses      %%
+%% on first page.                           %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{artnotes}
+%\note{Sample of title note}     % note to the article
+%\note[id=n1]{} % note, connected to author
+\end{artnotes}
+
+\end{fmbox}% comment this for two column layout
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The Abstract begins here                 %%
+%%                                          %%
+%% Please refer to the Instructions for     %%
+%% authors on http://www.biomedcentral.com  %%
+%% and include the section headings         %%
+%% accordingly for your article type.       %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{abstractbox}
+
+\begin{abstract} % abstract
+% \parttitle{First part title} %if any
+% Text for this section.
+
+% \parttitle{Second part title} %if any
+% Text for this section.
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The keywords begin here                  %%
+%%                                          %%
+%% Put each keyword in separate \kwd{}.     %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{keyword}
+% \kwd{sample}
+% \kwd{article}
+% \kwd{author}
+\end{keyword}
+
+% MSC classifications codes, if any
+%\begin{keyword}[class=AMS]
+%\kwd[Primary ]{}
+%\kwd{}
+%\kwd[; secondary ]{}
+%\end{keyword}
+
+\end{abstractbox}
+%
+%\end{fmbox}% uncomment this for twcolumn layout
+
+\end{frontmatter}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% The Main Body begins here                %%
+%%                                          %%
+%% Please refer to the instructions for     %%
+%% authors on:                              %%
+%% http://www.biomedcentral.com/info/authors%%
+%% and include the section headings         %%
+%% accordingly for your article type.       %%
+%%                                          %%
+%% See the Results and Discussion section   %%
+%% for details on how to create sub-sections%%
+%%                                          %%
+%% use \cite{...} to cite references        %%
+%%  \cite{koon} and                         %%
+%%  \cite{oreg,khar,zvai,xjon,schn,pond}    %%
+%%  \nocite{smith,marg,hunn,advi,koha,mouse}%%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% start of article main body
+% <put your article body there>
+
+\section{Introduction}
+
+
+
+
+
+
+\section{The Maximum Bipartition Support Supertree Problem} \label{sec:alg}
+\subsection{Terminology and Preliminary}
+
+Throughout the paper, we consider only unrooted trees. For any tree $T$, let $V(T)$, $E(T)$, and $L(T)$ denote the vertex set, the edge set, and the leaf set of $T$, respectively. For any $v\in V(T)$, let $N_T(v)$  A tree is \textit{fully resolved} if every non-leaf node has degree $3$. Let $\mathcal{T}_S$ denote the set of all fully resolved trees on leaf set $S$. In any tree $T$, each edge $e$ induces a bipartition $\pi_e := A|B$ of the leaf set, where $A$ and $B$ are the leaves in the two components of $T-e$, respectively. A bipartition $A|B$ is non-trivial if both sides have size at least $2$. For a tree $T$, $C(T) := \{\pi_e \mid e\in E(T)\}$ denotes the set of all bipartitions of $T$. For a fully resolved tree with $n$ leaves, $C(T)$ contains $2n-3$ bipartitions, exactly $n-3$ of which are non-trivial. A tree $T'$ is a \textit{refinement} of $T$ if $T$ can be obtained from $T'$ by contracting a set of edges. Equivalently, $T'$ is a refinement of $T$ if and only if $C(T) \subseteq C(T')$.\\
+
+Two bipartitions $\pi_1$ and $\pi_2$ of the same leaf set are \textit{compatible} if and only if there exists a tree $T$ such that $\pi_1, \pi_2 \in C(T)$. The following theorem and corollary give other categorizations of compatibility.
+\begin{theorem}[Theorem 2.20 of \cite{warnow2017computational}]\label{thm:compatibility}
+    A pair of bipartitions $A|B$ and $A'|B'$ of the same set is compatible if and only if at least one of the four pairwise intersections $A \cap A'$, $A\cap B'$, $B\cap A'$, $B \cap B'$ is empty. 
+\end{theorem}
+
+\begin{corollary}\label{cor:compatibility}
+     A pair of bipartitions $A|B$ and $A'|B'$ of the same set is compatible if and only if one side of $A|B$ is a subset of one side of $A'|B'$.
+\end{corollary}
+\medskip
+
+A tree $T$ restricted to a subset $R$ of its leaf set, denoted $T|_R$, is the minimal subtree of $T$ spanning $R$ with nodes of degree two suppressed. A bipartition $\pi = A|B$ restricted to a subset $R \subseteq A\cup B$ is $\pi|_R = A\cap R | B\cap R$. We have the following intuitive lemma with its proof in the appendix.
+
+\begin{lemma} \label{lem:bipar_restrict_edge}
+    Let $T$ be a tree with leaf set $S$ and let $\pi = A|B \in C(T)$ be a bipartition induced by $e \in E(T)$. Let $R \subseteq S$.
+    \begin{enumerate}
+        \item If $R \cap A = \emptyset$ or $R \cap B = \emptyset$, then $e \notin E(T|_R)$.
+        \item If $R \cap A \neq \emptyset$ and $R \cap B \neq \emptyset$, then for any $\pi' \in C(T|_R)$ induced by $e' \in E(T|_R)$, $\pi|_R = \pi'$ if and only if $e \in P(e')$.
+    \end{enumerate}
+\end{lemma}
+
+\begin{corollary} \label{cor:bipar_restrict}
+    Let $T$ be a tree with leaf set $S$ and let $\pi = A|B \in C(T)$ be a bipartition induced by $e \in E(T)$. Let $R \subseteq S$ such that $R \cap A \neq \emptyset$ and $R \cap B \neq \emptyset$. Then $\pi|_R \in C(T|_R)$. 
+\end{corollary}
+
+
+\begin{definition}
+For two trees $T$, $T'$ with the same leaf set, the \textit{bipartition support} of them is $\bs(T, T') := |C(T) \cap C(T')|$.
+\end{definition}
+
+Bipartition support measures the similarity between the topology of the trees.
+
+\subsection{Problem Statement}
+Let $T_1$ and $T_2$ be two fully resolved trees on leaf sets $S_1$ and $S_2$, respectively, such that $X := S_1 \cap S_2 \neq \emptyset$. Let $S := S_1 \cup S_2$. The maximum bipartition support supertree problem on two input trees, abbreviated \textsc{Max-Bisup-Supertree-$2$}, finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to $T_1$ and $T_2$. That is, 
+\begin{align*}
+    T^* &= \argmax_{T \in \mathcal{T}_S} \bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)\\ 
+        &= \argmax_{T \in \mathcal{T}_S} |C(T|_{S_1})\cap C(T_1)| + |C(T|_{S_2}) \cap C(T_2)|.
+\end{align*}
+We call $\bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)$ the support score of $T$ when $T_1$ and $T_2$ are clear from context.\\
+
+The more general maximum bipartition support supertree problem on a set of $N$ input trees, abbreviated \textsc{Max-Bisup-Supertree-$N$}, takes in a set of input trees $T_1,T_2,\dots,T_N$ with leaf sets $S_1,S_2,\dots,S_N$, respectively. \textsc{Max-Bisup-Supertree-$N$} finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to every input tree. That is,
+\begin{align*}
+    T^* &= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} \bs(T|_{S_i}, T_i) \\ 
+        %&= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} |C(T|_{S_1})\cap C(T_i)|.
+\end{align*}
+
+\subsection{Algorithm}
+We present a polynomial time algorithm for \textsc{Max-Bisup-Supertree-$2$} in this subsection. We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
+
+We define a weight function $w:\Pi \to \mathbb{N}_{\ge 0}$ such that for any bipartition $\pi$ of $X$, $w(\pi) = w(e_1) + w(e_2)$, where $e_i$ induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$. If for any $i \in \{1,2\}$, no $e_i$ exists that induces $\pi$ in $T_i|_X$, then we use $w(e_i) = 0$.\\
+
+For each $i \in \{1,2\}$ and each $e \in E(T_i|_X)$, let $\In(e)$ be the set of internal nodes of $P(e)$. For each $v \in \In(e)$, let $L(v)$ be the set of leaves in $S_i \backslash X$ whose connecting path to the backbone tree $T_i|_X$ goes through $v$ and let $T(v)$ be the minimal subtree spanning $L(v)$ in $T_i$. We say $T(v)$ is an extra subtree attached to $v$. Consider $T(v)$ rooted at the node $u$ which is the neighbor of $v$ in $T(v)$. Let $\mathcal{T}(e) := \{T(v) \mid v \in \In(e)\}$. Then $\mathcal{T}(e)$ is the set of extra subtrees attached to internal nodes of $P(e)$ in $T_i$. We note that $|\mathcal{T}(e)| = |\In(e)| = w(e)-1$. For any bipartition $\pi \in C(T_1|_X) \cup C(T_2|_X)$, we denote $\mathcal{T}(\pi) := \mathcal{T}(e_1) \cup \mathcal{T}(e_2)$, where $e_i$ is the edge that induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$ if $\pi \in C(T_i|_X)$. Let $\extra(T_i) := \bigcup_{e \in E(T_i|_X)} \mathcal{T}(e)$. Then $\extra := \extra(T_1) \cup \extra(T_2)$ denotes the set of all extra subtrees in $T_1$ and $T_2$. \note{figure to help}
+
+\begin{algorithm}
+    \caption{Max-BiSup Supertree}
+    \label{alg:maxbisup}
+    \textbf{Input}: two fully resolved trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$\\
+    \textbf{Output}: a fully resolved supertree $T$ on leaf set $S = S_1 \cup S_2$ that maximizes the support score 
+    \begin{algorithmic}[1]
+        \State compute $C(T_1|_X)$ and $C(T_2|_X)$
+        \For{each $\pi \in C(T_1|_X) \cup C(T_2|_X)$}
+            \State compute $\mathcal{T}(\pi)$ and $w(\pi)$
+        \EndFor
+        \State construct $T$ by having a star of leaf set $X$ with center vertex $\hat{v}$ and connecting the root of each $t \in \extra$ to $\hat{v}$, let $\hat{T} = T$       
+        \For{each $\pi \in \triv$}
+            \State $T \gets $ Refine-Triv($T_1, T_2, T, \pi, \hat{v}, \mathcal{T}$)
+        \EndFor
+        \State let $\tilde{T} = T$
+        \State construct the incompatibility graph $G = (V_1 \cup V_2, E)$, where $V_1 = C(T_1|_X)- C(T_2|_X)$ and $V_2 = C(T_2|_X) - C(T_1|_X)$, and $E = \{(\pi, \pi') \mid \pi \in V_1, \pi' \in V_2$, $\pi$ is not compatible with $\pi'\}$
+        \State compute the maximum weight independent set $I$ in $G$ with weight $w$
+        \State let $H(\hat{v}) = \ntriv \cap (C(T_1|_X) \cup C(T_2|_X))$
+        \For{each $\pi \in \ntriv \cap (C(T_1|_X) \cup C(T_2|_X))$} 
+            \State $sv(\pi) = \hat{v}$
+        \EndFor
+        \For{each $\pi \in \ntriv \cap (I \cup (C(T_1|_X) \cap C(T_2|_X)))$}
+            \State $T \gets $ Refine($T_1,T_2, T, \pi, H, sv, \mathcal{T}$)
+        \EndFor
+        \State let $T^* = T$
+        \State refine $T$ arbitrarily at polytomies until it is fully resolved
+        \State return $T$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Refine-Triv}
+    \label{alg:trivial_refine}
+
+    \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a trivial bipartition $\pi = A|b$ of $X$, a vertex $\hat{v} \in V(T)$, a dictionary $\mathcal{T}$\\
+    \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $\pi \in C(T'|_X)$ 
+    \begin{algorithmic}[1]
+        \State detach all extra subtrees in $\mathcal{T}(\pi)$ from $\hat{v}$ and attach them onto $(\hat{v},b)$ such that the subtrees from $\mathcal{T}(e_1)$ and subtrees from $\mathcal{T}(e_2)$ are side by side and each group respects the ordering of subtrees in $T_i$
+        \State return the resulting tree $T'$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+    \caption{Refine}
+    \label{alg:refine}
+    \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a bipartition $\pi = A|B$ of $X$, a dictionary $H$, a dictionary $sv$, a dictionary $\mathcal{T}$\\
+    \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $\pi \in C(T'|_X)$ 
+    \begin{algorithmic}[1]
+        \State $v \gets sv(\pi)$
+        \State compute $N_A:= \{u \in N_T(v) \mid \text{$\exists a \in A$ such that $u$ can reach $a$ in $T-v$}\}$ and $N_B:= \{u \in N_T(v) \mid \text{$\exists b \in B$ such that $u$ can reach $b$ in $T-v$}\}$.
+        \State $V(T) \gets V(T) \cup \{v_a, v_b\}$, $E(T) \gets E(T) \cup \{(v_a,v_b)\}$
+        \State $H(v_a) \gets \emptyset, H(v_b) \gets \emptyset$
+        \For{each $u \in N_A \cup N_B$} 
+            \If{$u \in N_A$} connect $u$ to $v_a$
+            \Else{} connect $u$ to $v_b$
+            \EndIf
+        \EndFor
+        \State detach all extra subtrees in $\mathcal{T}(\pi)$ from $v$ and attach them onto $(v_a,v_b)$ such that the subtrees from $\mathcal{T}(e_1)$ and subtrees from $\mathcal{T}(e_2)$ are side by side and each group respects the ordering of subtrees in $T_i$
+        \For{each bipartition $\pi'= A'|B' \in H(v)$ such that $\pi' \neq \pi$}
+            \State detach all extra subtrees in $\mathcal{T}(\pi')$ from $v$ 
+            \If{$A' \subseteq A$ or $B' \subseteq A$}
+                \State $sv(\pi') = v_a$ and $H(v_a) \gets H(v_a) + \pi'$
+                \State attach all extra subtrees in $\mathcal{T}(\pi')$ to $v_a$
+            \ElsIf{$A' \subseteq B$ or $B' \subseteq B$}
+                \State $sv(\pi') = v_b$ and $H(v_b) \gets H(v_b) + \pi'$
+                \State attach all extra subtrees in $\mathcal{T}(\pi')$ to $v_b$
+            \Else{} 
+                \State discard $\pi'$ and attach all extra subtrees in $\mathcal{T}(\pi')$ to either $v_a$ or $v_b$ 
+            \EndIf
+        \EndFor
+        \For{each remaining extra subtree attached to $v$}
+            \State detach it from $v$ and attach it to either $v_a$ or $v_b$
+        \EndFor
+        \State delete $v$ and incident edges from $T$
+        \State return the resulting tree $T'$
+    \end{algorithmic}
+\end{algorithm}
+
+For the analysis of the algorithm, we differentiate between two kinds of bipartitions in $C(T_1) \cup C(T_2)$. Let $\Pi_Y = \{\pi = A|B \in C(T_1) \cup C(T_2) \mid \text{either } A\cap X = \emptyset \text{, or } B \cap X = \emptyset\}$. Let $\Pi_X = \{\pi = A|B \in C(T_1) \cup C(T_2) \mid A\cap X \neq \emptyset \text{ and } B\cap X \neq \emptyset \}$. Intuitively, $\Pi_X$ is the set of bipartitions in $C(T_1)\cup C(T_2)$ that are induced by edges in the backbone trees $T_1|_X$ and $T_2|_X$ while $\Pi_Y$ is the set of bipartitions in $C(T_1)\cup C(T_2)$ that are induced by edges inside extra subtrees or connecting extra subtrees to the backbone trees.\\
+
+Let $p_X(T)$ and $p_Y(T)$ (we omit the parameters $T_1$ and $T_2$ for brevity) be the contributions to the support score of $T$ from bipartitions of $\Pi_X$ and $\Pi_Y$ for any $T \in \mathcal{T}_S$, respectively. Formally, we have 
+\begin{align*}
+    p_X(T) &= |C(T|_{S_1}) \cap C(T_1) \cap \Pi_X| + |C(T|_{S_2}) \cap C(T_2) \cap \Pi_X|,\\
+    p_Y(T) &= |C(T|_{S_1}) \cap C(T_1) \cap \Pi_Y| + |C(T|_{S_2}) \cap C(T_2) \cap \Pi_Y|.
+\end{align*}
+
+\begin{claim} \label{claim:sum_score_solves_prob}
+    If Algorithm \ref{alg:maxbisup} returns a tree $T$ such that $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, then Algorithm \ref{alg:maxbisup} solves \textsc{Max-Bisup-Supertree-$2$} correctly.
+\end{claim}
+\begin{proof}
+By definition of support score, any bipartition can only contribute to the support score if it is in $C(T_1) \cup C(T_2)$. It follows by definition of $\Pi_X$ and $\Pi_Y$ that $\Pi_X$ and $\Pi_Y$ is a disjoint decomposition of $C(T_1) \cup C(T_2)$. Thus, the support score of $T$ equals $p_X(T) + p_Y(T)$ for any tree $T$ on leaf set $S$. Then if $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, $T$ achieves the maximum support score among all trees of leaf set $S$, in particular, it achieves the maximum support score among all trees in $\mathcal{T}_S$.
+\end{proof}
+Therefore, it is enough for us to show that Algorithm \ref{alg:maxbisup} finds a tree $T$ that maximizes both $p_X(T)$ and $p_Y(T)$ at the same time.
+
+
+\begin{lemma}\label{lem:refine_only_increases}
+    For any tree $T$ of leaf set $S$ and any refinement $T'$ of $T$, $p_X(T')\ge p_X(T)$ and $p_Y(T') \ge p_Y(T)$.
+\end{lemma}
+\begin{proof}
+    Since $T'$ is an refinement of $T$, $C(T|_{S_i}) \subseteq C(T'|_{S_i})$ for any $i \in \{1,2\}$. Therefore, $|C(T|_{S_i}) \cap C(T_i) \cap \Pi_X| \le |C(T'|_{S_i}) \cap C(T_i) \cap \Pi_X|$ for any $i \in \{1,2\}$, and thus $p_X(T) \le p_X(T')$. Similarly, $|C(T|_{S_i}) \cap C(T_i) \cap \Pi_Y| \le |C(T'|_{S_i}) \cap C(T_i) \cap \Pi_Y|$ for any $i \in \{1,2\}$, and thus $p_Y(T) \le p_Y(T')$.
+\end{proof}
+
+
+\begin{lemma}\label{lem:max_pY}
+    For any tree $T$ of leaf set $S$, $p_Y(T) \le |\Pi_Y|$. In particular, let $\hat{T}$ be the tree constructed in Algorithm \ref{alg:maxbisup}. Then, $p_Y(\hat{T}) = |\Pi_Y|$. 
+\end{lemma}
+\begin{proof}
+    Since $T_1$ and $T_2$ has different leaf sets, $C(T_1)$ and $C(T_2)$ are disjoint. Since $\Pi_Y \subseteq C(T_1)\cup C(T_2)$, $C(T_1) \cap \Pi_Y$ and $C(T_2)\cap \Pi_Y$ forms a disjoint decomposition of $\Pi_Y$. By definition of $p_Y(\cdot)$, for any tree $T$ of leaf set $S$,
+    \begin{align*}
+        p_Y(T) &= |C(T|_{S_1}) \cap C(T_1) \cap \Pi_Y| + |C(T|_{S_2}) \cap C(T_2) \cap \Pi_Y| \\
+        &\le |C(T_1) \cap \Pi_Y| + | C(T_2) \cap \Pi_Y| \\
+        &= |\Pi_Y|.
+    \end{align*}
+    Fix any $\pi = A|B \in \Pi_Y$. By definition of $\Pi_Y$, either $A \cap X = \emptyset$ or $B \cap X = \emptyset$. Assume without loss of generality that $A \cap X = \emptyset$. If $\pi \in C(T_1)$, let $e_1$ be the edge that induces $\pi$ in $T_1$. Then $A \subseteq S_1 \backslash X$, which implies either $e_1$ is an internal edge in an extra subtree in $\extra(T_1)$, or $e_1$ connects one extra subtree in $\extra(T_1)$ to the backbone $T_1|_X$. In either case, the construction of $\hat{T}$ ensures that $\pi \in C(\hat{T}|_{S_1})$. Similarly if $\pi \in C(T_2)$, then $\pi \in C(\hat{T}|_{S_2})$ by construction. Therefore, each bipartition $\pi \in \Pi_Y$ contributes $1$ to $|C(\hat{T}|_{S_i}) \cap C(T_i) \cap \Pi_Y|$ for exactly one $i \in \{1,2\}$ and thus it contributes $1$ to $p_Y(\hat{T})$. Hence, $p_Y(\hat{T}) = |\Pi_Y|$.\\
+\end{proof}
+
+\begin{claim} \label{claim:begin}
+    Let $\hat{T}$ be the tree constructed in Algorithm \ref{alg:maxbisup}, then $p_X(\hat{T}) = 2 |X|$. 
+\end{claim}
+\begin{proof}
+    Let the center of the star from which $\hat{T}$ is constructed be the center of $\hat{T}$. For each $v \in X$, consider the bipartition $\pi_v = \{v\}\mid S \backslash \{v\}$ induced by the edge that connects the leaf $v$ to the center. It is easy to see that $\pi_v|_{S_i} = \{v\} \mid S_i \backslash \{v\} \in C(T_i)\cap C(\hat{T}|_{S_i})$ for any $i\in\{1,2\}$ as $\pi_v|_{S_i}$ is a trivial bipartition of $S_i$ and must be present in any tree on leaf set $S_i$. We also know $\pi_v|_{S_i} \in \Pi_X$ as $\pi_v \in C(T_1)\cup C(T_2)$ and both sides of $\pi_v$ has non-empty intersection with $X$. Thus, $\pi_v|_{S_i} \in C(\hat{T}|_{S_i}) \cap C(T_i) \cap \Pi_X$ for any $i \in \{1,2\}$. So for each $v \in X$, $\pi_v|_{S_1}$ and $\pi_v|_{S_2}$ each contributes $1$ to $p_X(\hat{T})$. Therefore, $p_X(\hat{T}) \ge 2|X|$. \\
+    
+    Fix any bipartition $\pi = A|B$ induced by any other edge of $\hat{T}$ such that $\pi|_{S_i} \in C(\hat{T}|_{S_i})$ for some $i \in \{1,2\}$. By construction of $\hat{T}$, the edge inducing $\pi$ is either inside an extra subtree or connecting the root of an extra subtree to the center Therefore, either $A \subseteq S\backslash X $ or $B \subseteq S \backslash X$, which implies $\pi|_{S_i} \notin \Pi_X$ for any $i \in \{1,2\}$. Hence, there is no other bipartition of $\hat{T}$ such that when restrict to $S_i$ contributes to $p_X(\hat{T})$. Therefore, $p_X(\hat{T}) = 2|X|$.
+\end{proof}
+
+
+
+
+\begin{lemma} \label{lem:one_bipar_upperbound}
+    Let $\pi = A|B$ be a bipartition of $X$. Let $T$ be a tree of leaf set $S$ such that $\pi \notin C(T|_X)$ and all bipartitions in $C(T|_X)$ are compatible with $\pi$. Let $T'$ be a refinement of $T$ such that for all $\pi' \in C(T'|_{S_i}) \backslash C(T|_{S_i})$ for some $i \in \{1,2\}$, $\pi'|_X = \pi$. Then, $p_X(T') - p_X(T) \le w(\pi)$. 
+\end{lemma}
+\begin{proof}
+    By definition of $p_X(\cdot)$, 
+    \begin{align*}
+        & p_X(T') - p_X(T) \\
+        =& |C(T'|_{S_1}) \cap C(T_1) \cap \Pi_X| + |C(T'|_{S_2}) \cap C(T_2) \cap \Pi_X| \\
+        &- (|C(T|_{S_1}) \cap C(T_1) \cap \Pi_X| + |C(T|_{S_2}) \cap C(T_2) \cap \Pi_X|) \\
+        =& |(C(T'|_{S_1})\backslash C(T|_{S_1})) \cap C(T_1) \cap \Pi_X|+|(C(T'|_{S_2})\backslash C(T|_{S_2})) \cap C(T_2) \cap \Pi_X|\\
+        =& \sum_{i = 1,2}|(C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X|.
+    \end{align*}
+    Therefore, we only need to prove that $\sum_{i = 1,2}|(C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X| \le w(\pi)$. For any $\pi' \in (C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X$ for any $i \in \{1,2\}$, we have $\pi'|_X = \pi$. \\
+    
+    We differentiate three different cases for the proof of the above statement: 1) $\pi \notin C(T_1|_X)\cup C(T_2|_X)$, 2) $\pi \in C(T_1|_X) \Delta C(T_2|_X)$, 3) $\pi \in C(T_1|_X) \cap C(T_2|_X)$. \\
+    
+    Case 1): Let $\pi \notin C(T_1|_X)\cup C(T_2|_X)$. Since no edge induces $\pi$ in $T_1|_X$ or $T_2|_X$, we have $w(\pi) = 0$. Assume for contradiction that there exists a bipartition $\pi'\in (C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X$ for some $i \in \{1,2\}$.  Since $\pi \notin C(T_1|_X)\cup C(T_2|_X)$ and $\pi'|_X = \pi$, by Corollary \ref{cor:bipar_restrict}, $\pi' \notin C(T_i)$ for any $i \in \{1,2\}$. This contradicts with the fact that $\pi' \in C(T_i)$ for some $i \in \{1,2\}$. Therefore, the assumption that there exists such a bipartition $\pi'$ is wrong and $\sum_{i = 1,2}|(C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X| = 0 \le w(\pi)$.\\
+    
+    Case 2): Let $\pi \in C(T_1|_X) \Delta C(T_2|_X)$. Assume without loss of generality that $\pi \in C(T_1|_X) \backslash C(T_2|_X)$. Then, we have $w(\pi) = w(e_1)$. Let $\pi'\in (C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X$ for some $i \in \{1,2\}$. Since $\pi'|_X = \pi$ and $\pi \notin C(T_2|_X)$, by Corollary \ref{cor:bipar_restrict}, we have $\pi' \notin C(T_2)$. Since $\pi' \in C(T_i)$ for some $i\in \{1,2\}$, it must be that $\pi' \in C(T_1)$. By Lemma \ref{lem:bipar_restrict_edge}, the edge which induces $\pi'$ in $T_1$ is an edge on $P_1(e_1)$. Since there are $w(e_1)$ edges on $P_1(e_1)$, there are at most $w(e_1)$ distinct such bipartitions $\pi'$s, and thus the statement is proved.\\
+    
+    Case 3): Let $\pi \in C(T_1|_X) \cap C(T_2|_X)$. Then we have $w(\pi) = w(e_1)+w(e_2)$. Fix any $\pi'\in (C(T'|_{S_1})\backslash C(T|_{S_1})) \cap C(T_1) \cap \Pi_X$. Since $\pi' \in C(T_1)$ and $\pi'|_X = \pi \in C(T_1|_X)$, by Lemma \ref{lem:bipar_restrict_edge}, the edge $e'$ that induces $\pi'$ is an edge on $P_1(e_1)$. Recall that $w(e_1) = |P_1(e_1)|$, then we have $|(C(T'|_{S_1})\backslash C(T|_{S_1})) \cap C(T_1) \cap \Pi_X| \le |P_1(e_1)| = w(e_1)$. Similarly, $|(C(T'|_{S_2})\backslash C(T|_{S_2})) \cap C(T_2) \cap \Pi_X| \le |P_2(e_2)| = w(e_2)$. Therefore, $\sum_{i = 1,2}|(C(T'|_{S_i})\backslash C(T|_{S_i})) \cap C(T_i) \cap \Pi_X| \le w(\pi)$.
+\end{proof}
+
+
+\begin{lemma} \label{lem:compatible_set_upperbound}
+    For any compatible set $F$ of bipartitions of $X$, let $T$ be a tree of leaf set $S$ such that $C(T|_X) = F$. Then $p_X(T) \le \sum_{\pi \in F} w(\pi)$.
+\end{lemma}
+\begin{proof}
+    
+    Fix an arbitrary ordering of bipartitions in $F$ and let them be $\pi_1,\pi_2,\dots,\pi_k$, where $k = |F|$. Let $F_i = \{\pi_1,\dots, \pi_i\}$ for any $i \in \{0,1,\dots,k\}$. In particular, $F_0 = \emptyset$ and $F_k = F$. Let $T^i$ be obtained by contracting any edge $e$ in $T$ such that $\pi_e \in \Pi_X$ and $\pi_e|_X \notin F_i$. Then $C(T^i|_X) = F_i$. In particular, we know $C(T^0|_X) = \emptyset$. By construction, $T^i$ is a refinement of $T^{i-1}$ for any $i \in \{1,2,\dots,k\}$ such that for any $\pi' \in C(T^i)\backslash C(T^{i-1})$, $\pi'|_X = \pi_i$. Then by Lemma \ref{lem:one_bipar_upperbound}, $p_X(T^i) - p_X(T^{i-1}) \le w(\pi_i)$. Therefore, 
+    \[p_X(T) - p_X(T^0) = \sum_{i = 1}^k p_X(T^i) - p_X(T^{i-1}) \le \sum_{i \in F}w(\pi_i).\]
+    
+    We also know that $p_X(T^0) = 0$ \note{(expand on this)} and thus $p_X(T) \le \sum_{i \in I}w(\pi_i)$ as desired.
+\end{proof}
+
+\begin{claim}\label{claim:after_add_trivial}
+    Let $\tilde{T}$ be the tree constructed in Algorithm \ref{alg:maxbisup}, then $p_X(\tilde{T}) = \sum_{\pi \in \triv} w(\pi)$. 
+\end{claim}
+
+
+\begin{lemma}\label{lem:refine_achieves_weight}
+Let $T$ be a tree from Algorithm \ref{alg:maxbisup} before a refinement step. Let $\pi = A|B \in \ntriv \cap (I \cup (C(T_1|_X)\cap C(T_2|_X)))$. Let $T'$ be a refinement of $T$ obtained from running Algorithm \ref{alg:refine} on $T$ and $\pi$, with the auxiliary data structures $H$, $sv$, and $\mathcal{T}$. Then, $p_X(T') - p_X(T) = w(\pi)$. 
+\end{lemma}
+\begin{proof}
+The algorithm makes sure that $\pi \notin C(T|_X)$ and all bipartitions in $C(T|_X)$ are compatible with $\pi$
+\end{proof}
+
+
+Let $G$ be the incompatibility graph defined in Algorithm \ref{alg:maxbisup} and $I$ be the maximum weight independent set in $G$ with weight function $w$. Let $G'= (V_1' \cup V_2',E')$ be another incompatibility graph such that $V_1' = C(T_1|_X)$ and $V_2' = C(T_2|_X)$, and $E' = \{(\pi, \pi') \mid \pi \in V_1', \pi' \in V_2'$, $\pi$ is not compatible with $\pi'\}$.  Let $I' := I \cup (C(T_1|_X )\cap C(T_2|_X))$.
+
+
+\begin{claim}\label{claim:independent_sets_equivalence}
+    $I'$ is a maximum weight independent set in $G'$ with weight function $w$. 
+\end{claim}
+\begin{proof}
+\end{proof}
+
+\begin{claim}\label{claim:after_add_all_bipars}
+    Let $T^*$ be the tree defined in Algorithm \ref{alg:maxbisup}, $p_X(T^*) \ge p_X(T)$ for any tree $T$ of leafset $S$.
+\end{claim}
+\begin{proof}
+then $p_X(T^*)= \sum_{\pi \in I} w(\pi) + \sum_{\pi \in (C(T_1|_X )\cap C(T_2|_X))} w(\pi) = \sum_{\pi \in I'}w(\pi)$.
+\end{proof}
+
+\begin{theorem}\label{thm:correctness_alg}
+Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$} in $O(n^3)$ \note{(Checking this)} time.
+\end{theorem}
+\begin{proof}
+From Lemma \ref{lem:max_pY} and Claim \ref{claim:after_add_all_bipars} and Lemma \ref{lem:refine_only_increases}, we know that $T^*$ defined in Algorithm \ref{alg:maxbisup} satisfy that $p_X(T^*) \ge p_X(T)$ and $p_Y(T^*) \ge p_Y(T)$ for any tree with leaf set $S$. Then by Claim \ref{claim:sum_score_solves_prob}, Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$}. Next we analyze the running time of Algorithm \ref{alg:maxbisup}.
+\end{proof}
+
+\subsection{Hardness for \textsc{Max-Bisup-Supertree-$3$}}
+In this subsection, we show that \textsc{Max-Bisup-Supertree-$N$} is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \textsc{Max-Bisup-Supertree-$3$}. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
+
+
+\begin{theorem}\label{thm:hardness}
+\textsc{Max-Bisup-Supertree-$3$} is NP-hard.
+\end{theorem}
+
+
+\appendix
+\section{Proofs from Section \ref{sec:alg}}
+
+Proof of Lemma \ref{lem:bipar_restrict_edge}
+\begin{proof}
+Let $T_R$ be the minimal subtree of $T$ that spans $R$. It follows that the leaf set of $T_R$ is $R$ and $T|_R$ is obtained from $T_R$ by suppressing all degree-two nodes. Let $\pi' = A'|B'$.
+By definition of $e$ inducing $\pi = A|B$, the vertices of $A$ are all disconnected from vertices of $B$ in $T-e$. If $R\cap A \neq \emptyset$ and $R\cap B \neq \emptyset$, then $e$ is necessary to connect $R\cap A$ with $R \cap B$, and thus $e$ must be in any tree spanning $R$ and in particular $e \in E(T_R)$. Since $T_R$ is a subgraph of $T$, the two components in $T_R-e$ are subgraphs of the two components in $T-e$. Thus, the leaves of the two components in $T_R-e$ are exactly $R\cap A$ and $R\cap B$. We also know that suppressing degree-two nodes does not change the connectivity between any leaves so the leaves of the two components in $T_R - P(e')$ (with vertices on the path also deleted) are the same as the leaves of the two components in $T|_R - e'$, which are $A'$ and $B'$. If $e \in P(e')$, since all internal nodes of $P(e')$ have degree two with both incident edges on $P(e')$, there is no leaf which exists in any of the two components in $T_R - e$ but does not exists in the corresponding component in $T_R-P(e')$. Therefore, $\pi|_R = R\cap A|R\cap B = A'|B' = \pi'$. If $e \notin P(e')$, then since $e \in E(T_R)$, there must exists $e'' \in E(T|_R)$ such that $e'' \neq e'$ and $e \in P(e'')$. By the arguement above, $\pi|_R = \pi''$ where $\pi''$ is the bipartition induced by $e''$ in $T|_R$. Since $e'' \neq e'$, we know $\pi' \neq \pi''$ and thus $\pi|_R \neq \pi'$. This concludes our proof that $\pi|_R = \pi'$ if and only if $e \in P(e')$. 
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% Backmatter begins here                   %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{backmatter}
+
+\section*{Competing interests}
+  The authors declare that they have no competing interests.
+
+\section*{Author's contributions}
+    Text for this section \ldots
+
+\section*{Acknowledgements}
+  Text for this section \ldots
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                  The Bibliography                       %%
+%%                                                         %%
+%%  Bmc_mathpys.bst  will be used to                       %%
+%%  create a .BBL file for submission.                     %%
+%%  After submission of the .TEX file,                     %%
+%%  you will be prompted to submit your .BBL file.         %%
+%%                                                         %%
+%%                                                         %%
+%%  Note that the displayed Bibliography will not          %%
+%%  necessarily be rendered by Latex exactly as specified  %%
+%%  in the online Instructions for Authors.                %%
+%%                                                         %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% if your bibliography is in bibtex format, use those commands:
+\bibliographystyle{bmc-mathphys} % Style BST file (bmc-mathphys, vancouver, spbasic).
+\bibliography{references}      % Bibliography file (usually '*.bib' )
+% for author-year bibliography (bmc-mathphys or spbasic)
+% a) write to bib file (bmc-mathphys only)
+% @settings{label, options="nameyear"}
+% b) uncomment next line
+%\nocite{label}
+
+% or include bibliography directly:
+% \begin{thebibliography}
+% \bibitem{b1}
+% \end{thebibliography}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Figures                       %%
+%%                               %%
+%% NB: this is for captions and  %%
+%% Titles. All graphics must be  %%
+%% submitted separately and NOT  %%
+%% included in the Tex document  %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Do not use \listoffigures as most will included as separate files
+
+\section*{Figures}
+  \begin{figure}[h!]
+  \caption{\csentence{Sample figure title.}
+      A short description of the figure content
+      should go here.}
+      \end{figure}
+
+\begin{figure}[h!]
+  \caption{\csentence{Sample figure title.}
+      Figure legend text.}
+      \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Tables                        %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Use of \listoftables is discouraged.
+%%
+\section*{Tables}
+\begin{table}[h!]
+\caption{Sample table title. This is where the description of the table should go.}
+      \begin{tabular}{cccc}
+        \hline
+           & B1  &B2   & B3\\ \hline
+        A1 & 0.1 & 0.2 & 0.3\\
+        A2 & ... & ..  & .\\
+        A3 & ..  & .   & .\\ \hline
+      \end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                               %%
+%% Additional Files              %%
+%%                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Additional Files}
+  \subsection*{Additional file 1 --- Sample additional file title}
+    Additional file descriptions text (including details of how to
+    view the file, if it is in a non-standard format or the file extension).  This might
+    refer to a multi-page table or a figure.
+
+  \subsection*{Additional file 2 --- Sample additional file title}
+    Additional file descriptions text.
+
+
+\end{backmatter}
+\end{document}
