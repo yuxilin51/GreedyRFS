@@ -1,12 +1,12 @@
 # Fdb version 3
-["bibtex max_bipar_supertree"] 1559795356 "max_bipar_supertree.aux" "max_bipar_supertree.bbl" "max_bipar_supertree" 1559795357
+["bibtex max_bipar_supertree"] 1559884999 "max_bipar_supertree.aux" "max_bipar_supertree.bbl" "max_bipar_supertree" 1559884999
   "bmc-mathphys.bst" 0 -1 0 ""
-  "max_bipar_supertree.aux" 1559795357 3073 4648686051f31e5beb83a9336ae8d9a4 ""
+  "max_bipar_supertree.aux" 1559884999 3016 654c32a2282ad46e6f34562f462c3dd8 ""
   "references.bib" 1559752430 216 a5d07483ea8ab35cb7ee504aa0b917f2 ""
   (generated)
   "max_bipar_supertree.bbl"
   "max_bipar_supertree.blg"
-["pdflatex"] 1559795356 "max_bipar_supertree.tex" "max_bipar_supertree.pdf" "max_bipar_supertree" 1559795357
+["pdflatex"] 1559884999 "max_bipar_supertree.tex" "max_bipar_supertree.pdf" "max_bipar_supertree" 1559884999
   "/etc/texmf/web2c/texmf.cnf" 1559614595 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
@@ -59,6 +59,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb" 1480098733 28902 2f5c04fd2884d1878057baa5aad22765 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb" 1480098733 25168 33771b85f45c82138dd7745db7092d1c ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1480098733 32569 5e5ddc8df908dea60932f3c484a54c0d ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb" 1480098733 32915 7bf7720c61a5b3a7ff25b0964421c9b6 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1480098733 32587 1788b0c1c5b39540c96f5e42ccd6dae8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1480098733 32716 08e384dc442464e7285e891af9f45947 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1480098733 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
@@ -102,10 +103,10 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1559616188 3236060 fd056e42459c13cbcb0cc6e0a7cae8d4 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1559616211 4224350 9fb57652bb857c4551833427a14e2c5d ""
   "bmcart.cls" 1435075586 55703 b06dccfb46d680f7fe8bbd6c37bd3c40 ""
-  "max_bipar_supertree.aux" 1559795357 3073 4648686051f31e5beb83a9336ae8d9a4 ""
-  "max_bipar_supertree.bbl" 1559795356 0 d41d8cd98f00b204e9800998ecf8427e "bibtex max_bipar_supertree"
-  "max_bipar_supertree.tex" 1559795312 44750 f21006d107d07d5a58e773652fbcca7b ""
+  "max_bipar_supertree.aux" 1559884999 3016 654c32a2282ad46e6f34562f462c3dd8 ""
+  "max_bipar_supertree.bbl" 1559884999 0 d41d8cd98f00b204e9800998ecf8427e "bibtex max_bipar_supertree"
+  "max_bipar_supertree.tex" 1559884991 62537 b9d5a01228ea10ef31d7344e8b1ac1d9 ""
   (generated)
+  "max_bipar_supertree.aux"
   "max_bipar_supertree.log"
   "max_bipar_supertree.pdf"
-  "max_bipar_supertree.aux"

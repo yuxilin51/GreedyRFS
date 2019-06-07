@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.6.3)  5 JUN 2019 23:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.6.3)  7 JUN 2019 00:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -340,8 +340,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 279--280
  []
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 281--282
+
+ []
+
+
 LaTeX Warning: Citation `warnow2017computational' on page 1 undefined on input 
-line 282.
+line 284.
 
 
 LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <8> not available
@@ -356,37 +361,32 @@ Overfull \hbox (1.0pt too wide) has occurred while \output is active
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 317--319
+Underfull \hbox (badness 10000) in paragraph at lines 325--327
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--328
+Underfull \hbox (badness 10000) in paragraph at lines 335--336
 
  []
 
 [2]
-Underfull \hbox (badness 10000) in paragraph at lines 329--330
+Underfull \hbox (badness 10000) in paragraph at lines 337--338
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 413--414
+Underfull \hbox (badness 10000) in paragraph at lines 415--416
 
  []
 
-[3] [4]
-Underfull \hbox (badness 10000) in paragraph at lines 455--456
-
- []
-
-[5]
-Underfull \hbox (badness 10000) in paragraph at lines 474--476
+[3] [4] [5]
+Underfull \hbox (badness 10000) in paragraph at lines 457--458
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 477--478
+Underfull \hbox (badness 10000) in paragraph at lines 476--478
 
  []
 
@@ -395,13 +395,18 @@ Underfull \hbox (badness 10000) in paragraph at lines 479--480
 
  []
 
-
+[6]
 Underfull \hbox (badness 10000) in paragraph at lines 481--482
 
  []
 
-[6]
-Overfull \hbox (2.2123pt too wide) in paragraph at lines 499--500
+
+Underfull \hbox (badness 10000) in paragraph at lines 483--484
+
+ []
+
+
+Overfull \hbox (2.2123pt too wide) in paragraph at lines 501--502
 []\OT1/cmr/bx/n/10 Claim 3 []\OT1/cmr/m/it/10 Let $[]$ be the tree con-structed
  in Al-go-rithm 1[], then $\OML/cmm/m/it/10 p[]\OT1/cmr/m/n/10 ([]) = [][] \OML
 /cmm/m/it/10 w\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 ^^Y\OT1/cmr/m/n/10 )$\OT1/cmr/m
@@ -409,17 +414,38 @@ Overfull \hbox (2.2123pt too wide) in paragraph at lines 499--500
  []
 
 [7]
+Underfull \hbox (badness 10000) in paragraph at lines 524--525
 
-LaTeX Font Warning: Font shape `OT1/cmss/m/sc' in size <10> not available
-(Font)              Font shape `OT1/cmr/m/sc' tried instead on input line 546.
+ []
 
-[8] (./max_bipar_supertree.bbl)
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 526--527
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+ []
 
-[9] 
+
+Underfull \hbox (badness 10000) in paragraph at lines 528--529
+
+ []
+
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 538--539
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 545--549
+
+ []
+
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 550--551
+
+ []
+
+[11] [12] [13] (./max_bipar_supertree.bbl) 
 AED: lastpage setting LastPage
-[10] (./max_bipar_supertree.aux)
+[14] (./max_bipar_supertree.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
@@ -429,13 +455,13 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 4306 strings out of 492615
- 57158 string characters out of 6131391
- 146418 words of memory out of 5000000
- 8165 multiletter control sequences out of 15000+600000
+ 4307 strings out of 492615
+ 57179 string characters out of 6131391
+ 147439 words of memory out of 5000000
+ 8166 multiletter control sequences out of 15000+600000
  16797 words of font info for 64 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,10n,41p,1501b,388s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 32i,10n,41p,2237b,340s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx5.pfb></usr/share
 /texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texliv
@@ -456,14 +482,15 @@ s/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmssi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on max_bipar_supertree.pdf (10 pages, 307879 bytes).
+/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on max_bipar_supertree.pdf (14 pages, 340696 bytes).
 PDF statistics:
- 142 PDF objects out of 1000 (max. 8388607)
- 102 compressed objects within 2 object streams
+ 159 PDF objects out of 1000 (max. 8388607)
+ 114 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -276,7 +276,9 @@
 \section{The Maximum Bipartition Support Supertree Problem} \label{sec:alg}
 \subsection{Terminology and Preliminary}
 
-Throughout the paper, we consider only unrooted trees. For any tree $T$, let $V(T)$, $E(T)$, and $L(T)$ denote the vertex set, the edge set, and the leaf set of $T$, respectively. For any $v\in V(T)$, let $N_T(v)$  A tree is \textit{fully resolved} if every non-leaf node has degree $3$. Let $\mathcal{T}_S$ denote the set of all fully resolved trees on leaf set $S$. In any tree $T$, each edge $e$ induces a bipartition $\pi_e := A|B$ of the leaf set, where $A$ and $B$ are the leaves in the two components of $T-e$, respectively. A bipartition $A|B$ is non-trivial if both sides have size at least $2$. For a tree $T$, $C(T) := \{\pi_e \mid e\in E(T)\}$ denotes the set of all bipartitions of $T$. For a fully resolved tree with $n$ leaves, $C(T)$ contains $2n-3$ bipartitions, exactly $n-3$ of which are non-trivial. A tree $T'$ is a \textit{refinement} of $T$ if $T$ can be obtained from $T'$ by contracting a set of edges. Equivalently, $T'$ is a refinement of $T$ if and only if $C(T) \subseteq C(T')$.\\
+Throughout the paper, we consider only unrooted trees. For any tree $T$, let $V(T)$, $E(T)$, and $L(T)$ denote the vertex set, the edge set, and the leaf set of $T$, respectively. For any $v\in V(T)$, let $N_T(v)$  A tree is \textit{fully resolved} if every non-leaf node has degree $3$. Let $\mathcal{T}_S$ denote the set of all fully resolved trees on leaf set $S$. In any tree $T$, each edge $e$ induces a bipartition $\pi_e := A|B$ of the leaf set, where $A$ and $B$ are the leaves in the two components of $T-e$, respectively. A bipartition $A|B$ is non-trivial if both sides have size at least $2$. For a tree $T$, $C(T) := \{\pi_e \mid e\in E(T)\}$ denotes the set of all bipartitions of $T$. For a fully resolved tree with $n$ leaves, $C(T)$ contains $2n-3$ bipartitions, exactly $n-3$ of which are non-trivial. \\
+
+A tree $T'$ is a \textit{refinement} of $T$ if $T$ can be obtained from $T'$ by contracting a set of edges. Equivalently, $T'$ is a refinement of $T$ if and only if $C(T) \subseteq C(T')$. To refine a tree $T$ with a biparition $\pi$ \\
 
 Two bipartitions $\pi_1$ and $\pi_2$ of the same leaf set are \textit{compatible} if and only if there exists a tree $T$ such that $\pi_1, \pi_2 \in C(T)$. The following theorem and corollary give other categorizations of compatibility.
 \begin{theorem}[Theorem 2.20 of \cite{warnow2017computational}]\label{thm:compatibility}
@@ -302,6 +304,12 @@ A tree $T$ restricted to a subset $R$ of its leaf set, denoted $T|_R$, is the mi
     Let $T$ be a tree with leaf set $S$ and let $\pi = A|B \in C(T)$ be a bipartition induced by $e \in E(T)$. Let $R \subseteq S$ such that $R \cap A \neq \emptyset$ and $R \cap B \neq \emptyset$. Then $\pi|_R \in C(T|_R)$. 
 \end{corollary}
 
+We give an characterization of the vertex to split to add a certain bipartition into a tree in the following lemma. The proof appears in the appendix. 
+\begin{lemma} \label{lem:vertex_to_split}
+    Let $T$ be a tree with leaf set $S$ and let $\pi = A|b$ be a bipartition such that $\pi \notin C(T)$ but $\pi$ is compatible with $C(T)$. Then there exists a vertex $v \in V(T)$ such that there is a division of $N_T(v)$ into $N_A \cup N_B$ such that $N_A$ ($N_B$ respectively) is the set of neighbors which can reach vertices of $A$ ($B$) but not $B$ ($A$) in $T-v$. We can split $v$ to add $\pi$ to $C(T)$.
+\end{lemma}
+
+
 
 \begin{definition}
 For two trees $T$, $T'$ with the same leaf set, the \textit{bipartition support} of them is $\bs(T, T') := |C(T) \cap C(T')|$.
@@ -326,49 +334,43 @@ The more general maximum bipartition support supertree problem on a set of $N$ i
 \subsection{Algorithm}
 We present a polynomial time algorithm for \textsc{Max-Bisup-Supertree-$2$} in this subsection. We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
 
-For any biparition $\pi$ of $X$, let $e_i(\pi)$ denote the edge that induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$. We define a weight function $w:\Pi \to \mathbb{N}_{\ge 0}$ such that for any bipartition $\pi$ of $X$, $w(\pi) = w(e_1(\pi)) + w(e_2(\pi))$, If for any $i \in \{1,2\}$, no $e_i(\pi)$ induces $\pi$ in $T_i|_X$, then we use $w(e_i(\pi)) = 0$. Therefore, for any $\pi \notin C(T_1|_X) \cup C(T_2|_X)$, $w(\pi) = 0$. For any set $F$ of bipartitions, $w(F) = \sum_{\pi \in F} w(\pi)$.\\
+For any biparition $\pi$ of $X$, let $e_i(\pi)$ denote the edge that induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$. If $e_i(\pi)$ does not exists, any set associated with it is empty. We define a weight function $w:\Pi \to \mathbb{N}_{\ge 0}$ such that for any bipartition $\pi$ of $X$, $w(\pi) = w(e_1(\pi)) + w(e_2(\pi))$, If for any $i \in \{1,2\}$, no $e_i(\pi)$ induces $\pi$ in $T_i|_X$, then we use $w(e_i(\pi)) = 0$. Therefore, for any $\pi \notin C(T_1|_X) \cup C(T_2|_X)$, $w(\pi) = 0$. For any set $F$ of bipartitions, $w(F) = \sum_{\pi \in F} w(\pi)$.\\
 
 For each $i \in \{1,2\}$ and each $e \in E(T_i|_X)$, let $\In(e)$ be the set of internal nodes of $P(e)$. For each $v \in \In(e)$, let $L(v)$ be the set of leaves in $S_i \backslash X$ whose connecting path to the backbone tree $T_i|_X$ goes through $v$ and let $T(v)$ be the minimal subtree spanning $L(v)$ in $T_i$. We say $T(v)$ is an extra subtree attached to $v$. Consider $T(v)$ rooted at the node $u$ which is the neighbor of $v$ in $T(v)$. Let $\mathcal{T}(e) := \{T(v) \mid v \in \In(e)\}$. Then $\mathcal{T}(e)$ is the set of extra subtrees attached to internal nodes of $P(e)$ in $T_i$. We note that $|\mathcal{T}(e)| = |\In(e)| = w(e)-1$. For any bipartition $\pi \in C(T_1|_X) \cup C(T_2|_X)$, we denote $\mathcal{T}(\pi) := \mathcal{T}(e_1(\pi)) \cup \mathcal{T}(e_2(\pi))$. Let $\extra(T_i) := \bigcup_{e \in E(T_i|_X)} \mathcal{T}(e)$. Then $\extra := \extra(T_1) \cup \extra(T_2)$ denotes the set of all extra subtrees in $T_1$ and $T_2$. \note{figure to help}
 
 \note{add intuition/overview for algorithm}
 
 \begin{algorithm}
-    \caption{Max-BiSup Supertree}
+    \caption{Max-BiSup Supertree}%
     \label{alg:maxbisup}
-    \textbf{Input}: two fully resolved trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$\\
-    \textbf{Output}: a fully resolved supertree $T$ on leaf set $S = S_1 \cup S_2$ that maximizes the support score 
     \begin{algorithmic}[1]
+        \Statex \textbf{Input}: two fully resolved trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$ 
+        \Statex \textbf{Output}: a fully resolved supertree $T$ on leaf set $S = S_1 \cup S_2$ that maximizes the support score
         \State compute $C(T_1|_X)$ and $C(T_2|_X)$
         \For{each $\pi \in C(T_1|_X) \cup C(T_2|_X)$}
             \State compute $\mathcal{T}(e_1(\pi))$, $\mathcal{T}(e_2(\pi))$, $\mathcal{T}(\pi)$ and $w(\pi)$
         \EndFor
-        \State construct $T$ by having a star of leaf set $X$ with center vertex $\hat{v}$ and connecting the root of each $t \in \extra$ to $\hat{v}$, let $\hat{T} = T$       
+        \State construct $T$ as a star of leaf set $X$ with center vertex $\hat{v}$ with the root of each $t \in \extra$ connected to $\hat{v}$  \Comment{let $\hat{T} = T$}       
         \For{each $\pi \in \triv$}
-            \State $T \gets $ Refine-Triv($T_1, T_2, T, \pi, \hat{v}, \mathcal{T}$)
-        \EndFor
-        \State let $\tilde{T} = T$
+            \State $T \gets $ Refine-Triv($T_1, T_2, T, \pi, \hat{v}, \mathcal{T}$) \Comment{let $\tilde{T} = T$ after for loop}
+        \EndFor 
         \State construct the incompatibility graph $G = (V_1 \cup V_2, E)$, where $V_1 = C(T_1|_X)- C(T_2|_X)$ and $V_2 = C(T_2|_X) - C(T_1|_X)$, and $E = \{(\pi, \pi') \mid \pi \in V_1, \pi' \in V_2$, $\pi$ is not compatible with $\pi'\}$
         \State compute the maximum weight independent set $I$ in $G$ with weight $w$
-        \State let $H(\hat{v}) = \ntriv \cap (C(T_1|_X) \cup C(T_2|_X))$
-        \For{each $\pi \in \ntriv \cap (C(T_1|_X) \cup C(T_2|_X))$} 
-            \State $sv(\pi) = \hat{v}$
+        \State let $I' = I \cup (C(T_1|_X) \cap C(T_2|_X))$, let $H(\hat{v}) = \ntriv $, let $sv(\pi) = \hat{v}$ for all $\pi \in \ntriv$
+        \For{each $\pi \in \ntriv \cap I'$}
+            \State $T \gets $ Refine($T_1,T_2, T, \pi, H, sv, \mathcal{T}$) \Comment{let $T^* = T$ after for loop}
         \EndFor
-        \For{each $\pi \in \ntriv \cap (I \cup (C(T_1|_X) \cap C(T_2|_X)))$}
-            \State $T \gets $ Refine($T_1,T_2, T, \pi, H, sv, \mathcal{T}$)
-        \EndFor
-        \State let $T^* = T$
         \State refine $T$ arbitrarily at polytomies until it is fully resolved
         \State return $T$
     \end{algorithmic}
 \end{algorithm}
 
 \begin{algorithm}
-    \caption{Refine-Triv}
-    \label{alg:trivial_refine}
+    \caption{Refine-Triv} \label{alg:trivial_refine}
 
-    \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a trivial bipartition $\pi = a|B$ of $X$, a vertex $\hat{v} \in V(T)$, a dictionary $\mathcal{T}$\\
-    \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $\pi \in C(T'|_X)$ 
     \begin{algorithmic}[1]
+        \Statex \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a trivial bipartition $\pi = a|B$ of $X$, a vertex $\hat{v} \in V(T)$, a dictionary $\mathcal{T}$
+        \Statex \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $C(T|_X) - C(T'|_X) = \pi$ 
         \State detach all extra subtrees in $\mathcal{T}(\pi)$ from $\hat{v}$ and attach them onto $(\hat{v},a)$ such that the subtrees from $\mathcal{T}(e_1(\pi))$ and subtrees from $\mathcal{T}(e_2(\pi))$ are side by side and each group respects the ordering of subtrees in $T_i$
         \State return the resulting tree $T'$
     \end{algorithmic}
@@ -377,11 +379,11 @@ For each $i \in \{1,2\}$ and each $e \in E(T_i|_X)$, let $\In(e)$ be the set of 
 \begin{algorithm}
     \caption{Refine}
     \label{alg:refine}
-    \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a bipartition $\pi = A|B$ of $X$, a dictionary $H$, a dictionary $sv$, a dictionary $\mathcal{T}$\\
-    \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $\pi \in C(T'|_X)$ 
     \begin{algorithmic}[1]
+        \Statex \textbf{Input}: two trees $T_1$, $T_2$ with leaf sets $S_1$ and $S_2$ where $S_1 \cap S_2 = X \neq \emptyset$, an unrooted tree $T$ on leaf set $S = S_1 \cup S_2$, a nontrivial bipartition $\pi = A|B$ of $X$, a dictionary $H$, a dictionary $sv$, a dictionary $\mathcal{T}$
+        \Statex \textbf{Output}: an tree $T'$ which is a refinement of $T$ such that $C(T|_X) - C(T'|_X) = \pi$ 
         \State $v \gets sv(\pi)$
-        \State compute $N_A:= \{u \in N_T(v) \mid \text{$\exists a \in A$ such that $u$ can reach $a$ in $T-v$}\}$ and $N_B:= \{u \in N_T(v) \mid \text{$\exists b \in B$ such that $u$ can reach $b$ in $T-v$}\}$.
+        \State compute $N_A:= \{u \in N_{t|_x}(v) \mid \text{$\exists a \in A$ such that $u$ can reach $a$ in $T|_X-v$}\}$ and $N_B:= \{u \in N_{T|_X}(v) \mid \text{$\exists b \in B$ such that $u$ can reach $b$ in $T|_X-v$}\}$.
         \State $V(T) \gets V(T) \cup \{v_a, v_b\}$, $E(T) \gets E(T) \cup \{(v_a,v_b)\}$
         \State $H(v_a) \gets \emptyset, H(v_b) \gets \emptyset$
         \For{each $u \in N_A \cup N_B$} 
@@ -452,7 +454,7 @@ Therefore, it is enough for us to show that Algorithm \ref{alg:maxbisup} finds a
     Let $\hat{T}$ be the tree constructed in Algorithm \ref{alg:maxbisup}, then $p_X(\hat{T}) = 2 |X|$. 
 \end{claim}
 \begin{proof}
-    Let the center of the star from which $\hat{T}$ is constructed be the center of $\hat{T}$. For each $v \in X$, consider the bipartition $\pi_v = \{v\}\mid S \backslash \{v\}$ induced by the edge that connects the leaf $v$ to the center. It is easy to see that $\pi_v|_{S_i} = \{v\} \mid S_i \backslash \{v\} \in C(T_i)\cap C(\hat{T}|_{S_i})$ for any $i\in\{1,2\}$ as $\pi_v|_{S_i}$ is a trivial bipartition of $S_i$ and must be present in any tree on leaf set $S_i$. We also know $\pi_v|_{S_i} \in \Pi_X$ as $\pi_v \in C(T_1)\cup C(T_2)$ and both sides of $\pi_v$ has non-empty intersection with $X$. Thus, $\pi_v|_{S_i} \in C(\hat{T}|_{S_i}) \cap C(T_i) \cap \Pi_X$ for any $i \in \{1,2\}$. So for each $v \in X$, $\pi_v|_{S_1}$ and $\pi_v|_{S_2}$ each contributes $1$ to $p_X(\hat{T})$. Therefore, $p_X(\hat{T}) \ge 2|X|$. \\
+    For each $v \in X$, consider the bipartition $\pi_v = \{v\}\mid S \backslash \{v\}$ of $\hat{T}$ induced by the edge that connects the leaf $v$ to the center $\hat{v}$. It is easy to see that $\pi_v|_{S_i} = \{v\} \mid S_i \backslash \{v\} \in C(T_i)$ for any $i\in\{1,2\}$ as $\pi_v|_{S_i}$ is a trivial bipartition of $S_i$. By Lemma \ref{cor:bipar_restrict}, we have $\pi_v|_{S_i} \in \hat{T}|_{S_i}$. We also know $\pi_v|_{S_i} \in \Pi_X$ as both sides of $\pi_v$ has non-empty intersection with $X$. Thus, $\pi_v|_{S_i} \in C(\hat{T}|_{S_i}) \cap C(T_i) \cap \Pi_X$ for any $i \in \{1,2\}$. So for each $v \in X$, $\pi_v|_{S_1}$ and $\pi_v|_{S_2}$ each contributes $1$ to $p_X(\hat{T})$. Therefore, $p_X(\hat{T}) \ge 2|X|$. \\
     
     Fix any bipartition $\pi = A|B$ induced by any other edge of $\hat{T}$ such that $\pi|_{S_i} \in C(\hat{T}|_{S_i})$ for some $i \in \{1,2\}$. By construction of $\hat{T}$, the edge inducing $\pi$ is either inside an extra subtree or connecting the root of an extra subtree to the center Therefore, either $A \subseteq S\backslash X $ or $B \subseteq S \backslash X$, which implies $\pi|_{S_i} \notin \Pi_X$ for any $i \in \{1,2\}$. Hence, there is no other bipartition of $\hat{T}$ such that when restrict to $S_i$ contributes to $p_X(\hat{T})$. Therefore, $p_X(\hat{T}) = 2|X|$.
 \end{proof}
@@ -508,17 +510,50 @@ Therefore, it is enough for us to show that Algorithm \ref{alg:maxbisup} finds a
     Since Algorithm \ref{alg:trivial_refine} moves all extra subtrees in $\mathcal{T}(\pi)$ onto the edge $(\hat{v},a)$ and orders them such that extra subtrees in $\mathcal{T}(e_1)$ (and $\mathcal{T}(e_2)$, respectively) follows the order of trees within the group on $T_1$ ($T_2$), i.e., $t_1$ ($t_1'$) is closest to $a$ and $t_p$ ($t_q'$) is furthest away, it is easy to see that we also have $\pi_k \in C(T|_{S_1})$ for any $k \in [w(e_1)]$ and $\pi_k' \in C(T|_{S_2})$ for any $k \in [w(e_2)]$, where $T$ is the tree obtained after add $\pi$ to the backbone through Algorithm \ref{alg:trivial_refine}. Therefore, $|C(T|_{S_1}) \cap C(T_1|_X) \cap \Pi_X|$ is increased by $w(e_1)-1$ by the algorithm as $\pi_k \notin C(T|_{S_1})$ before the algorithm for all $k \in []$ except $k=1$. Similarly, $|C(T|_{S_1}) \cap C(T_2|_X) \cap \Pi_X|$ is increased by $w(e_2)-1$, so $p_X(T)$ is increased by $w(e_1)+w(e_2)-2 = w(\pi)-2$ by running Algorithm \ref{alg:trivial_refine} on $T$ and $\pi$. Since running Algorithm \ref{alg:trivial_refine} to add other trivial bipartitions of $X$ never destroys the bipartitions of $S_1$ or $S_2$ already in $T$, we have $p_X(\tilde{T}) = p_X(\hat{T}) + \sum_{\pi \in \triv} (w(\pi) -2) = 2|X| + \sum_{\pi \in \triv} (w(\pi) - 2) = \sum_{\pi \in \triv} w(\pi)$.
 \end{proof}
 
-
-
-\begin{lemma}\label{lem:refine_achieves_weight}
-Let $T$ be a tree from Algorithm \ref{alg:maxbisup} before a refinement step. Let $\pi = A|B \in \ntriv \cap (I \cup (C(T_1|_X)\cap C(T_2|_X)))$. Let $T'$ be a refinement of $T$ obtained from running Algorithm \ref{alg:refine} on $T$ and $\pi$, with the auxiliary data structures $H$, $sv$, and $\mathcal{T}$. Then, $p_X(T') - p_X(T) = w(\pi)$. 
+\begin{lemma}\label{lem:invariants}
+    At any stage of the Algorithm \ref{alg:maxbisup} at and after line $11$, we have the following invariants of $T$ and the auxiliary data structures $H$ and $sv$:
+        \begin{enumerate}
+        \item For any bipartition $\pi \in \ntriv $, $sv(\pi)$ is the vertex to split to add $\pi$ to $C(T|_X)$. For any internal vertex $v$, the set of bipartitions $H(v) \subseteq \ntriv $ is the set of bipartitions which can be added to $C(T|_X)$ by splitting $v$. 
+        
+        \item For any $\pi = A|B \in H(v)$, for all $t \in \mathcal{T}(\pi)$, the root of $t$ is a neighbor of $v$.
+        
+        \item For any $\pi = A|B \in C(T|_X)$ induced by edge $e$ and any $\pi' = A'|B'$ that is compatible with $\pi$. Let $C(A), C(B)$ be the two components containing the leaves of $A$ and $B$ in $T|_X - e$. If $A'$ or $B'$ is a subset of $A$, then all $t \in \mathcal{T}(\pi')$ are attached to an edge or a vertex in $C(A)$. If $A'$ or $B'$ is a subset of $B$, then all $t \in \mathcal{T}(\pi')$ are attached to an edge or a vertex in $C(B)$. 
+    \end{enumerate}
 \end{lemma}
 \begin{proof}
-    The algorithm makes sure that $\pi \notin C(T|_X)$ and all bipartitions in $C(T|_X)$ are compatible with $\pi$
+    We prove the invariants by induction on the number of refinement steps $k$ performed on $T$. When $k=0$, we have $T = \tilde{T}$ and $C(T|_X) = \triv$ and thus $T|_X$ is a star with leaf set $X$. Thus all bipartitions in $\ntriv$ are compatible with $T$. For any $\pi \in \ntriv $, $\hat{v}$ is the vertex to refine in $T|_X$ to add $\pi$ to $C(T|_X)$. Therefore, $sv(\pi)$ and $H(\hat{v})$ are both correct. The roots of all extra subtrees in $\mathcal{T}(\pi)$ for any $\pi \in \ntriv$ are all connected to $\hat{v}$, so invariant $2$ also holds. For any $\pi \in C(T|_X) = \triv$, let $\pi = {a}|B$. Therefore, $C({a})$ is the vertex $a$ and $C(B)$ is the rest of the star of $T|_X$. For any bipartition $\pi' \neq \pi$, either $\pi'$ is trivial and thus $\mathcal{T}(\pi')$ are all attached to the edge connecting the leaf with $\hat{v}$ or $\pi'$ is non-trivial and thus all of $\mathcal{T}(\pi')$ are attached to $\hat{v}$. In either case, any extra subtree in $\mathcal{T}(\pi')$is attached to a vertex or an edge in $C(B)$. This proves invariant $3$ and thus concludes our proof for the base case.\\ 
+    
+    Assume that all invariants hold after any $k' < k$ steps of refinement. Let $\pi = A|B$ be the bipartition to add in the $k$th refinement step. We will show that after the $k$th refinement step, i.e., one execution of Algorithm \ref{alg:refine}, the invariants still hold for the resulting tree $T'$. Since $sv(\pi) = \pi$ at the beginning of Algorithm \ref{alg:refine}, $\pi$ can be added to $C(T|_X)$ by splitting $v$, i.e., there exists a division of neighbors of $v$ in $T|_X$ into $N_A \cup N_B$ such that $N_A$ (or $N_B$ respcetively) consists of neighbors of $v$ which can reach vertices of $A$ (or $B$) in $T|_X-v$. Then, the algorithm correctly connects $N_A$ to $v_a$ and $N_B$ to $v_b$ so the new edge $(v_a,v_b)$ induces the bipartition $\pi = A|B$ in $T|_X$. For any vertex $u \neq v$ and any bipartition $\pi' \in H(u)$, the invariants $1$ and $2$ still hold after Algorithm \ref{alg:refine} as we do not change $H(u)$, $sv(\pi')$, or the extra subtrees attached to $u$. For any bipartition $\pi' = A'|B' \in H(v)$ such that $\pi' \neq \pi$, if $\pi'$ is not compatible with $\pi$, then it is cannot be added to $C(T'|_X)$ since $\pi$ is added, so the algorithm correctly discard $\pi'$ and does not add it to $H(v_a)$ or $H(v_b)$. If $\pi'$ is compatible with $\pi$, we will show that the invariants $1$ and $2$ hold for $\pi'$.\\
+    
+    By Corollary \ref{cor:compatibility}, one side of $A'|B'$ is a subset of one side of $A|B$. Consider the case where one side of $A'|B'$ is a subset of $A$. The other case is symmetrical. Also assume without loss of generality that $A' \subseteq A$, then $B \subseteq B'$. In this case, Algorithm \ref{alg:refine} adds $\pi'$ to $H(v_a)$ and set $sv(\pi) = v_a$. We will show that this step preserves the invariants. Since $\pi' \in H(v)$, before adding $\pi$ we can split $v$ to add $\pi'$ to $C(T|_X)$. Then there exists a division of neighbors of $v$ in $T|_X$ into $N_{A'}$ and $N_{B'}$ such that $N_{A'}$ (or $N_{B'}$, respectively) consists of neighbors of $v$ which can reach vertices of $A'$ (or $B'$) in $T|_X - v$. It is easy to see that $N_{A'} \subseteq N_A$ and $N_B \subseteq N_{B'}$. Since $N_A \cup N_B = N_{A'} \cup N_{B'} = N_{T|_X}(v)$, we have $N_A \backslash N_{A'} = N_{B'} \backslash N_B$. Since all vertices in $N_B$ are connected to $v_b$ in $T'$ while vertices in $N_{B'} \backslash N_B$ are connected to $v_a$, $N_{B'} \backslash N_B \cup \{v_b\}$ is the set of all neighbors of $v_a$ which can reach leaves of $B'$ in $T'|_X - v_a$. Then $N_{T'|_X}(v_a) = N_A \cup \{v_b\} = N_{A'} \cup (N_A \backslash N_{A'} \cup \{v_b\}) = N_{A'} \cup (N_{B'} \backslash N_B \cup v_b)$ implies that $N_{A'}$ and $N_{B'} \backslash N_B \cup \{v_b\}$ gives an division of neighbors of $v_a$ such that $N_{A'}$ are the neighbors that can reach leaves of $A'$ in $T'|_X -v_a$ and $N_{B'} \backslash N_B \cup \{v_b\}$ are the neighbors that can reach leaves of $B'$ in $T'|_X -v_a$. Such a division proves that $v_a$ is the correct vertex to refine in $T'|_X$ to add $\pi'$ to $C(T'|_X)$ after the $k$th refinement. Therefore, invariant $1$ holds with respect to $\pi'$. Since $\pi' \in H(v)$ before adding $\pi$, we also have for all $t \in \mathcal{T}(\pi')$, the root of $t$ is connected to $v$ before adding $\pi$. Then, Algorithm \ref{alg:refine} attaches roots of all trees in $\mathcal{T}(\pi')$ to $v_a$ and since $\pi' \subseteq H(v_a)$, invariant $2$ holds for $\pi'$. \\
+
+    We have showed that invariants $1$ and $2$ hold for the tree $T'$ with the auxiliary data structure $H$ for all internal nodes and data structure $sv$ for all bipartitions still compatible $T'$. Next we show that invariant $3$ holds. Since $\pi$ is the only bipartition added to $C(T'|_X)$, we only need to show two things: 1) for any $pi'=A'|B' \in C(T|_X)$, trees in $\mathcal{T}(pi)$ are attached to $C(A')$ or $C(B')$ appropriately, 2) for any $\pi''$ compatible with $\pi$, trees in $\mathcal{T}(\pi'')$ are attached to $C(A)$ or $C(B)$ appropriately. For 1), we assume without loss of generality that $\pi' = A'|B'$ such that $A' \subseteq A$, then $B \subseteq B'$. Therefore, $(v_a,v_b) \in C(B')$ and since all $t \in \mathcal{T}(\pi)$ are attached onto $(v_a,v_b)$ by Algorithm \ref{alg:refine}, the invariant $3$ holds with respect to $\pi'$. For 2), we assume without loss of generality that $\pi'' = A''|B''$ is compatible with $\pi$ such that $A'' \subseteq A$. Then either $\pi'' \in C(T|_X)$ and thus $\pi''$ is induced by an edge $e''$ which is in $C(A)$ or $\pi'' \notin C(T|_X)$ and thus there exists a vertex $v$ in $C(A)$ such that we can add $\pi''$ to $C(T|_X)$ by spliting $v$. In the former case, all $t \in \mathcal{T}(\pi'')$ are attached on $e''$, in the latter case, all $t \in \mathcal{T}(\pi'')$ are attached on $v$ by invariant $2$ before adding $\pi$. Therefore, in both cases the invariant $3$ holds with respect to $\pi$, which concludes the proof for invariant $3$ and our inductive proof overall.
 \end{proof}
 
 
-Let $G$ be the incompatibility graph defined in Algorithm \ref{alg:maxbisup} and $I$ be the maximum weight independent set in $G$ with weight function $w$. Let $G'= (V_1' \cup V_2',E')$ be another incompatibility graph such that $V_1' = C(T_1|_X)$ and $V_2' = C(T_2|_X)$, and $E' = \{(\pi, \pi') \mid \pi \in V_1', \pi' \in V_2'$, $\pi$ is not compatible with $\pi'\}$.  Let $I' := I \cup (C(T_1|_X )\cap C(T_2|_X))$.
+\begin{lemma}\label{lem:refine_achieves_weight}
+Let $T$ be a tree from Algorithm \ref{alg:maxbisup} before a refinement step. Let $\pi = A|B \in \ntriv \cap I'$. Let $T'$ be a refinement of $T$ obtained from running Algorithm \ref{alg:refine} on $T$ and $\pi$, with the auxiliary data structures $H$, $sv$, and $\mathcal{T}$. Then, $p_X(T') - p_X(T) = w(\pi)$. 
+\end{lemma}
+\begin{proof}
+    We know $T$ is a refinement of $\tilde{T}$. Since $C(\tilde{T}|_X) = \triv \subseteq C(T_1|_X) \cap C(T_2|_X) \subseteq I'$ and we only refine by bipartitions from $I'$, we know $C(T|_X) \subseteq I'$. Since $\pi \in \ntriv \cap I'$ and $I'$ is a compatible set, all bipartitions in $C(T|_X)$ are compatible with $\pi$. Thus it is possible to refine $T|_X$ with $\pi$ such that $C(T'|_X) - C(T|_X) = \pi$. By invariant $1$ of Lemma \ref{lem:invariants}, $v = sv(\pi)$ is the vertex to split to add $\pi$ to $T|_X$ and thus the Algorithm \ref{alg:refine} correctly splits $v$ into $v_a$ and $v_b$ and connects them to appriopriate neighbors such that in $T'|_X$, $(v_a,v_b)$ induces $\pi$.\\
+
+    We abbreviate $e_1(\pi)$ and $e_2(\pi)$ by $e_1$ and $e_2$.  Consider all extra subtrees in $\mathcal{T}(e_1)$ and index the extra subtrees as $t_1, t_2, \dots, t_p$ such that $t_1$ is the closest $a$ in $T_1$ and $p = |\mathcal{T}(e_1)| = w(e_1)-1$. Similarly, index the extra subtrees in $\mathcal{T}(e_2)$ to be $t_1', t_2', \dots, t_q'$ such that $t_1'$ is closest to $a$ in $T_2$ and $q = |\mathcal{T}(e_2)| = w(e_2)-1$. 
+
+    Let $C_i(A)$, $C_i(B)$ be the component in $T_i|_X - e_i$ that contains the leaf set $A$ or $B$, respectively. We define the extra subtrees in $T_i$ on the side of $A$ or on the side of $B$ to be \[\mathcal{T}_i(A) = \bigcup_{e \in C_i(A)} \mathcal{T}(e), \mathcal{T}_i(B) = \bigcup_{e \in C_i(B)} \mathcal{T}(e). \]
+    For any set $\mathcal{T}$ of trees, let $L(\mathcal{T})$ denote the union of the leafset of trees in $\mathcal{T}$. We note that $\extra(T_i) = \mathcal{T}_i(A) \cup \mathcal{T}_i(B) \cup \mathcal{T}(e_i)$ and thus $A \cup L(\mathcal{T}_i(A)) \cup L(\mathcal{T}(e_i)) \cup L(\mathcal{T}_i(B)) \cup B = S_i$ for $i \in \{1,2\}$. 
+
+    For each $k \in [w(e_1)]$, we define
+    $A_k := \bigcup_{i = 1}^{k-1} L(t_i) \cup L(\mathcal{T}_1(A)) \cup A,\; \pi_k := A_k | S_1 \backslash A_k$, and for each $k \in [w(e_2)]$, we define
+    $A_k' := \bigcup_{i = 1}^{k-1} L(t_i') \cup L(\mathcal{T}_2(A)) \cup A,\; \pi_k' := A_k' | S_2 \backslash A_k'$.
+    We know that for each $k \in [w(e_1)]$, $S_1 \backslash A_k = \bigcup_{i = k}^{p} L(t_i) \cup L(\mathcal{T}_1(B)) \cup B$. Thus, for any $k \in [w(e_1)]$, $\pi_k$ is the bipartition induced by the $k$th edge on $P(e_1)$ in $T_1$, where the edges are numbered from the side of $A$. Therefore, $\pi_k \in C(T_1)$ for any $k \in [w(e_1)]$. Similarly, $\pi_k' \in C(T_2)$  for any $k \in [w(e_2)]$. \\
+
+    Since for any $k \in [w(e_1)]$, $A_k \cap X = A \neq \emptyset$ and $(S_1 \backslash A_k) \cap X = B \neq \emptyset$, we have $\pi_k |_X = \pi$ and $\pi_k \in \Pi_X$. Similarly, for each $k \in [w(e_2)]$, $\pi_k' \in \Pi_X$ and $\pi_k'|_X = \pi$. We also know that since $\pi \notin C(T|_X)$, by Corollary \ref{cor:bipar_restrict}, $\pi_k \notin C(T|_{S_1})$ for any $k \in [w(e_1)]$ and $\pi_k' \notin C(T|_{S_2})$ for any $k \in [w(e_2)]$. We claim that $\pi_k \in C(T'|_{S_1})$ for all $k \in [w(e_1)]$ and $\pi_k' \in C(T'|_{S_2})$ for all $k \in [w(e_2)]$. Then, $|C(T'|_{S_1})\cap C(T_1) \cap \Pi_X| - |C(T|_{S_1})\cap C(T_1) \cap \Pi_X| = w(e_1)$ and $|C(T'|_{S_2}) \cap C(T_2) \cap \Pi_X| - |C(T|_{S_2}) \cap C(T_2) \cap \Pi_X| = w(e_2)$, and thus $p_X(T') - p_X(T) = w(e_1) + w(e_2) = w(\pi)$. \\
+    
+    Now we only need to prove the claim. Fix $k \in [w(e_1)]$, we will show that $\pi_k \in C(T'|_{S_1})$. The claim of $\pi_k' \in C(T'|_{S_2})$ for any $k \in [w(e_2)]$ follows by symmetry.  By invariant $2$ of Lemma \ref{lem:invariants}, we know that all extra subtrees of $\mathcal{T}(e_1) \cup \mathcal{T}(e_2)$ were attached to $v$ at the beginning of Algorithm \ref{alg:refine} and thus the algorithm attaches them all onto $(v_a, v_b)$ in the order of $t_1,t_2,\dots,t_p$, where $t_1$ is closest to $A$. Let the attaching vertex of $t_i$ onto $(v_a, v_b)$ be $v_i$ for any $i \in [w(e_1)]$. Then we note $P( (v_a,v_b) )$ is the path from $v_a$ to $v_1,v_2,\dots, v_p$ and then to $v_b$. Fix any $t \in \mathcal{T}_1(A)$, let $e$ be the edge such that $t \in \mathcal{T}(e)$ in $T_1|_X$, i.e., $e$ is the edge $t$ attaches to in $T_1|_X$. Since $e$ and $e_1$ are both edges of $T_1|_X$, $\pi_e = A'|B'$ is compatible with $\pi$. By definition of $\mathcal{T}_1(A)$, $e \in C_1(A)$ and thus one component in $T_1|_X - e$ is a subgraph of $C_1(A)$. Therefore, the leaves of that component is a subset of $A$, i.e., $A' \subseteq A$ or $B' \subseteq A$. By invariant $3$ of Lemma \ref{lem:invariants}, $t$ is in the component with leaf set $A$ in $T'|_X - (v_a,v_b))$ and thus in a component with vertices of $A$ in $T'-P(e_1)$. Therefore, if we delete any edge on $P( (v_a,v_b) )$ in $T'$, $t$ is in the same component as $A$. Similarly, for any $t \in \mathcal{T}_1(B)$, all leaves of $t$ are in the same component with $B$ if we delete any edge on $P( (v_a,v_b) )$. In particular, consider $T'|_{S_1} - (v_{k-1}, v_k)$, the leaves of the component containing $v_{k-1}$ is exactly $A \cup L(\mathcal{T}_1(A)) \cup  \bigcup_{i = 1}^{k-1}L(t_i) = A_k$. Therefore, the edge $(v_{k-1},v_k)$ induces the bipartition $A_k | S_1 \backslash A_k$ in $T'|_{S_1}$. Hence, $\pi_k \in C(T'|_{S_1})$ as desired. 
+\end{proof}
+
+
+Let $G$, $I$, $I'$ be defined as in Algorithm \ref{alg:maxbisup}. Let $G'= (V_1' \cup V_2',E')$ be the full incompatibility graph of $T_1|_X$ and $T_2|_X$ such that $V_1' = C(T_1|_X)$ and $V_2' = C(T_2|_X)$, and $E' = \{(\pi, \pi') \mid \pi \in V_1', \pi' \in V_2'$, $\pi$ is not compatible with $\pi'\}$. 
 
 
 \begin{claim}\label{claim:max_compatible_subset}
@@ -537,19 +572,23 @@ Let $T$ be any tree of leaf set $S$. Let $F = C(T|_X)$. Then by Lemma \ref{lem:c
 \end{proof}
 
 \begin{theorem}\label{thm:correctness_alg}
-Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$} in $O(n^3)$ \note{(Checking this)} time.
+Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$} in $O(n^2|X|)$ time, where $n=\max\{|S_1|,|S_2|\}$.
 \end{theorem}
 \begin{proof}
 From Lemma \ref{lem:max_pY} and Claim \ref{claim:after_add_all_bipars} and Lemma \ref{lem:refine_only_increases}, we know that $T^*$ defined in Algorithm \ref{alg:maxbisup} satisfy that $p_X(T^*) \ge p_X(T)$ and $p_Y(T^*) \ge p_Y(T)$ for any tree with leaf set $S$. Then by Claim \ref{claim:sum_score_solves_prob}, Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$}. Next we analyze the running time of Algorithm \ref{alg:maxbisup}.
+
+First we analyze the running time of Algorithm \ref{alg:refine}. Line $2$ takes $O(|X|^2)$ time as we can do DFS search in $T|_X - v$ from every neighbor of $v$ and check in $O(|X|)$ time if any newly discovered vertex is a vertex in $A$ or $B$ and label the neighbors of $v$ accordingly. Line $5$ to $7$ takes $O(|X|)$ time as $v$ has $O(|X|)$ neighbors. Line $8$ takes $O(n)$ time as there are at most $O(n)$ extra subtrees in $\mathcal{T}(\pi)$. Line $9$ to $18$ takes $O(n+|X|^2 )$ time as there are at most $O(n)$ extra subtrees to be moved and there are at most $O(|X|)$ bipartitions in $H(v)$ with each of the containment conditions checkable in $O(|X|)$ time if labels of leaves are stored in a pre-processed sorted list instead of a set. Line $19$ can again take $O(n)$ time. The rest of the algorithm takes constant time. Overall, Algorithm \ref{alg:refine} runs in $O(n + |X|^2)$ time. Algorithm \ref{alg:trivial_refine} essentially performs line $8$ of Algorithm \ref{alg:refine} for trivial biparitions and runs in $O(n)$ time.
+
+For Algorithm \ref{alg:maxbisup}, line $1$ takes $O(n^2+ n|X|^2)$ time as we need to compute $\pi_e|_X$ and take the union for all $e \in E(T_1) \cup E(T_2)$. There are $O(n)$ edges in $E(T_1) \cup E(T_2)$. Computing $\pi_e|_X$ takes $O(n)$ time by running DFS on $T_i - e$ for $e \in E(T_i)$ to obtain $\pi_e$ and taking intersection of both sides of $e$ with $X$, separately. Taking union of the bipartitions takes $O(n |X|^2)$ time as whenever we add a new biparition, it needs to be compared to the $O(|X|)$ existing ones in the set and since both have size $O(|X|)$ the comparison can be done in $O(|X|)$ time again if they are represented by two sorted list instead of two sets. In this step, we can alway maintain a set of edges in $T_i$ for each bipartition $\pi$ such that $\pi_e|_X = \pi$. In line $2$ to $3$, we first compute the path $P(e_i(\pi))$ for each $\pi$ by assemling the set of edges asscociated with $\pi$ from last step into a path. This takes $O(n^2)$ time by counting the times any vertex appear in the set of edges and those which only appear once are the end of the path while those appear twice are internal nodes of the path. Then we can find the extra subtree attached to each internal vertex $v$ of the path $P(e_i(\pi))$ by DFS in $T_i - v$ from the neighbor of $v$ that does not appear in the path. Therefore, the procedure takes $O(n)$ time for each bipartition and thus takes $O(n^2|X|)$ time overall. Line $4$ takes $O(n)$ time and line $5-6$ runs Algrithm \ref{alg:trivial_refine} $O(|X|)$ times using a total of $O(n|X|)$ time. Line $7$ constructs an incompatibility graph with $|V_1\cup V_2| = O(|X|)$ and $|E| = O(|X|^2)$ in $O(|X|^3)$ time as compatibility of two biparitions can be checked in $O(|X|)$ time. Line $8$ runs in $O(|V||E|) = O(|X|^3)$ time.\note{(write algorithm seperately?)} Line $9$ runs in $O(|X|)$ time. Line $10-11$ runs Algorithm \ref{alg:refine} $O(|X|)$ times with a total of $O(n|X|+|X|^3)$ time. Line $12$ runs random refinement steps at most $|X|$ times, each of which can take $O(n)$ time. Since $|X| \le n$, $|X|^3 \le n|X|^2 \le n^2|X|$, and thus, the overall running time of the algorithm is donimated by $O(|n|^2|X|)$.
 \end{proof}
 
-\subsection{Hardness for \textsc{Max-Bisup-Supertree-$3$}}
-In this subsection, we show that \textsc{Max-Bisup-Supertree-$N$} is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \textsc{Max-Bisup-Supertree-$3$}. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
+% \subsection{Hardness for \textsc{Max-Bisup-Supertree-$3$}}
+% In this subsection, we show that \textsc{Max-Bisup-Supertree-$N$} is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \textsc{Max-Bisup-Supertree-$3$}. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
 
 
-\begin{theorem}\label{thm:hardness}
-\textsc{Max-Bisup-Supertree-$3$} is NP-hard.
-\end{theorem}
+% \begin{theorem}\label{thm:hardness}
+% \textsc{Max-Bisup-Supertree-$3$} is NP-hard.
+% \end{theorem}
 
 
 \appendix
@@ -559,6 +598,13 @@ Proof of Lemma \ref{lem:bipar_restrict_edge}
 \begin{proof}
 Let $T_R$ be the minimal subtree of $T$ that spans $R$. It follows that the leaf set of $T_R$ is $R$ and $T|_R$ is obtained from $T_R$ by suppressing all degree-two nodes. Let $\pi' = A'|B'$.
 By definition of $e$ inducing $\pi = A|B$, the vertices of $A$ are all disconnected from vertices of $B$ in $T-e$. If $R\cap A \neq \emptyset$ and $R\cap B \neq \emptyset$, then $e$ is necessary to connect $R\cap A$ with $R \cap B$, and thus $e$ must be in any tree spanning $R$ and in particular $e \in E(T_R)$. Since $T_R$ is a subgraph of $T$, the two components in $T_R-e$ are subgraphs of the two components in $T-e$. Thus, the leaves of the two components in $T_R-e$ are exactly $R\cap A$ and $R\cap B$. We also know that suppressing degree-two nodes does not change the connectivity between any leaves so the leaves of the two components in $T_R - P(e')$ (with vertices on the path also deleted) are the same as the leaves of the two components in $T|_R - e'$, which are $A'$ and $B'$. If $e \in P(e')$, since all internal nodes of $P(e')$ have degree two with both incident edges on $P(e')$, there is no leaf which exists in any of the two components in $T_R - e$ but does not exists in the corresponding component in $T_R-P(e')$. Therefore, $\pi|_R = R\cap A|R\cap B = A'|B' = \pi'$. If $e \notin P(e')$, then since $e \in E(T_R)$, there must exists $e'' \in E(T|_R)$ such that $e'' \neq e'$ and $e \in P(e'')$. By the arguement above, $\pi|_R = \pi''$ where $\pi''$ is the bipartition induced by $e''$ in $T|_R$. Since $e'' \neq e'$, we know $\pi' \neq \pi''$ and thus $\pi|_R \neq \pi'$. This concludes our proof that $\pi|_R = \pi'$ if and only if $e \in P(e')$. 
+\end{proof}
+
+Proof of Lemma \ref{lem:vertex_to_split}
+\begin{proof}
+Since $\pi$ is compatible with $C(T)$ but $\pi \notin C(T)$, by definition, there exists a tree $T'$ such that $C(T') = C(T) + \pi$. Let $e = (v_a,v_b)$ be the edge that induces $\pi$ in $T'$ such that the component containing $v_a$ in $T'-(v_a,v_b)$ has leafset $A$ and the omponent containing $v_b$ in $T'-(v_a,v_b)$ has leafset $B$. If we contract $(v_a,v_b)$, then $T'$ becomes $T$. Let $v$ be the vertex of $T$ corresponding to the vertex of $T'$ created from contracting $(v_a,v_b)$. Let $N_a$, $N_b$ be the neighbors of $v_a$ and $v_b$ in $T'-(v_a,v_b)$, respectively. Let $N_A$, $N_B$ be vertices in $T$ corresponding to $N_a$ and $N_b$. We note that $N_A \cup N_B = N_T(v)$. Since in $T' -(v_a,v_b)$, no vertex in $N_a$ can reach any vertex of $B$, the same is true in $T' - v_a - v_b$. But each vertex in $N_a$ can reach some vertex of $A$ in $T' - v_a - v_b$ by either being a leaf in $A$ or in the same component of some leaf in $A$. Similarly, in $T' - v_a - v_b$, no vertex of $N_b$ can reach any vertex of $A$, but every every vertex of $N_b$ can reach some vertex of $B$. By construction, $T' - v_a - v_b$ has the same topology as $T - v$, and thus $N_A$ (and $N_B$ respectively) is a set of neighbors of $v$ which can reach some vertex of $A$ ($B$) but no vertex of $B$ ($A$). Therefore, $v$ is the vertex desired. 
+
+To obtain $T'$ from $T$, we can delete $v$ and add two new vertices $v_a$, $v_b$ with an edge between them. We also connect all vertices in $N_A$ to $v_a$ and all vertices in $N_B$ to $v_b$. Then it is easy to see that $(v_a,v_b)$ induces $\pi$ in $T'$. 
 \end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
