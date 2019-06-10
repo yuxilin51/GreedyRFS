@@ -621,8 +621,11 @@ For Algorithm \ref{alg:maxbisup}, line $1$ takes $O(n^2+ n|X|^2)$ time as we nee
 \end{proof}
 
 \subsection{Hardness for \textsc{Bisup-Supertree-$3$}}
-In this subsection, we show that \genbisup is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \genbisupthree. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
+In this subsection, we show that \genbisup is NP-hard even when $N = 3$. We reduce the maximum independent set problem on tripartite graphs, which was shown to be NP-hard, to \genbisupthree.
 
+\begin{theorem}\label{thm:IS_tripartite_hardness}
+Independent Set on tripartite graphs is NP-hard.
+\end{theorem}
 
 \begin{theorem}\label{thm:hardness}
 \genbisupthree is NP-hard.
