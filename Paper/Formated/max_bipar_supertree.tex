@@ -54,7 +54,7 @@
 \usepackage[utf8]{inputenc} %unicode support
 %\usepackage[applemac]{inputenc} %applemac support if unicode package fails
 %\usepackage[latin1]{inputenc} %UNIX support if unicode package fails
-\usepackage{amsmath, amsfonts, amssymb,amsthm, mathtools,xcolor, algorithm, algorithmicx, dsfont, cite}
+\usepackage{amsmath, amsfonts, amssymb,amsthm, mathtools,xcolor, algorithm, algorithmicx, dsfont, cite, xspace}
 \usepackage[noend]{algpseudocode}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,6 +86,13 @@
 \newcommand{\triv}{\mathrm{Triv}}
 \newcommand{\ntriv}{\mathrm{NonTriv}}
 \newcommand{\bs}{\mathrm{bisup}}
+\newcommand{\RF}{\mathrm{RF}}
+\newcommand{\bisuptwo}{\textsc{Bisup-Supertree-$2$}\xspace}
+\newcommand{\bisupn}{\textsc{Bisup-Supertree-$N$}\xspace}
+\newcommand{\genbisup}{\textsc{Gen-Bisup-Supertree-$N$}\xspace}
+\newcommand{\genbisupthree}{\textsc{Gen-Bisup-Supertree-$3$}\xspace}
+\newcommand{\rfn}{\textsc{RF-Supertree-$N$}\xspace}
+\newcommand{\rftwo}{\textsc{RF-Supertree-$2$}\xspace}
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\extra}{Extra}
@@ -137,22 +144,22 @@
 ]{\inits{XY}\fnm{Xilin} \snm{Yu}}
 \author[
    addressref={aff1},
-   email={}
+   email={thienle2@illinois.edu}
 ]{\inits{TL}\fnm{Thien} \snm{Le}}
 
 \author[
    addressref={aff1},
-   email={}
+   email={sac@illinois.edu}
 ]{\inits{SC}\fnm{Sarah} \snm{Christensen}}
 
 \author[
    addressref={aff1},
-   email={}
+   email={emolloy2@illinois.edu}
 ]{\inits{EM}\fnm{Erin} \snm{Molloy}}
 
 \author[
    addressref={aff1},
-   email={}
+   email={warnow@illinois.edu}
 ]{\inits{TW}\fnm{Tandy} \snm{Warnow}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,13 +178,13 @@
   \city{Urbana},                              % city
   \cny{US}                                    % country
 }
-\address[id=aff2]{%
-  \orgname{Marine Ecology Department, Institute of Marine Sciences Kiel},
-  \street{D\"{u}sternbrooker Weg 20},
-  \postcode{24105}
-  \city{Kiel},
-  \cny{Germany}
-}
+% \address[id=aff2]{%
+%   \orgname{Marine Ecology Department, Institute of Marine Sciences Kiel},
+%   \street{D\"{u}sternbrooker Weg 20},
+%   \postcode{24105}
+%   \city{Kiel},
+%   \cny{Germany}
+% }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                          %%
@@ -273,12 +280,12 @@
 
 
 
-\section{The Maximum Bipartition Support Supertree Problem} \label{sec:alg}
-\subsection{Terminology and Preliminary}
 
-Throughout the paper, we consider only unrooted trees. For any tree $T$, let $V(T)$, $E(T)$, and $L(T)$ denote the vertex set, the edge set, and the leaf set of $T$, respectively. For any $v\in V(T)$, let $N_T(v)$  A tree is \textit{fully resolved} if every non-leaf node has degree $3$. Let $\mathcal{T}_S$ denote the set of all fully resolved trees on leaf set $S$. In any tree $T$, each edge $e$ induces a bipartition $\pi_e := A|B$ of the leaf set, where $A$ and $B$ are the leaves in the two components of $T-e$, respectively. A bipartition $A|B$ is non-trivial if both sides have size at least $2$. For a tree $T$, $C(T) := \{\pi_e \mid e\in E(T)\}$ denotes the set of all bipartitions of $T$. For a fully resolved tree with $n$ leaves, $C(T)$ contains $2n-3$ bipartitions, exactly $n-3$ of which are non-trivial. \\
+\section{Terminology and Preliminary}\label{sec:prelim}
 
-A tree $T'$ is a \textit{refinement} of $T$ if $T$ can be obtained from $T'$ by contracting a set of edges. Equivalently, $T'$ is a refinement of $T$ if and only if $C(T) \subseteq C(T')$. To refine a tree $T$ with a biparition $\pi$ \\
+Throughout the paper, we consider only unrooted trees. For any tree $T$, let $V(T)$, $E(T)$, and $L(T)$ denote the vertex set, the edge set, and the leaf set of $T$, respectively. For any $v\in V(T)$, let $N_T(v)$ denote the set of neighbors of $v$ in $T$. A tree is \textit{fully resolved} if every non-leaf node has degree $3$. Let $\mathcal{T}_S$ denote the set of all fully resolved trees on leaf set $S$. In any tree $T$, each edge $e$ induces a bipartition $\pi_e := A|B$ of the leaf set, where $A$ and $B$ are the leaves in the two components of $T-e$, respectively. A bipartition $A|B$ is non-trivial if both sides have size at least $2$. For a tree $T$, $C(T) := \{\pi_e \mid e\in E(T)\}$ denotes the set of all bipartitions of $T$. For a fully resolved tree with $n$ leaves, $C(T)$ contains $2n-3$ bipartitions, exactly $n-3$ of which are non-trivial. \\
+
+A tree $T'$ is a \textit{refinement} of $T$ if $T$ can be obtained from $T'$ by contracting a set of edges. Equivalently, $T'$ is a refinement of $T$ if and only if $C(T) \subseteq C(T')$.\\
 
 Two bipartitions $\pi_1$ and $\pi_2$ of the same leaf set are \textit{compatible} if and only if there exists a tree $T$ such that $\pi_1, \pi_2 \in C(T)$. The following theorem and corollary give other categorizations of compatibility.
 \begin{theorem}[Theorem 2.20 of \cite{warnow2017computational}]\label{thm:compatibility}
@@ -306,33 +313,64 @@ A tree $T$ restricted to a subset $R$ of its leaf set, denoted $T|_R$, is the mi
 
 We give an characterization of the vertex to split to add a certain bipartition into a tree in the following lemma. The proof appears in the appendix. 
 \begin{lemma} \label{lem:vertex_to_split}
-    Let $T$ be a tree with leaf set $S$ and let $\pi = A|b$ be a bipartition such that $\pi \notin C(T)$ but $\pi$ is compatible with $C(T)$. Then there exists a vertex $v \in V(T)$ such that there is a division of $N_T(v)$ into $N_A \cup N_B$ such that $N_A$ ($N_B$ respectively) is the set of neighbors which can reach vertices of $A$ ($B$) but not $B$ ($A$) in $T-v$. We can split $v$ to add $\pi$ to $C(T)$.
+    Let $T$ be a tree with leaf set $S$ and let $\pi = A|B$ be a bipartition such that $\pi \notin C(T)$ but $\pi$ is compatible with $C(T)$. Then there exists a vertex $v \in V(T)$ such that there is a division of $N_T(v)$ into $N_A \cup N_B$ such that $N_A$ ($N_B$ respectively) is the set of neighbors which can reach vertices of $A$ ($B$) but not $B$ ($A$) in $T-v$. We can split $v$ to add $\pi$ to $C(T)$.
 \end{lemma}
 
-
+We have the following definition of Robinson-Foulds distance and bipartition support where the former measures differences between the topology of the trees and the latter measures the similarity.
+\begin{definition}
+For two trees $T$, $T'$ with the same leaf set, the \textit{Robinson-Foulds distance} of them is $\RF(T, T') := |C(T)\backslash C(T')| + |C(T') \backslash C(T)|$.
+\end{definition}
 
 \begin{definition}
 For two trees $T$, $T'$ with the same leaf set, the \textit{bipartition support} of them is $\bs(T, T') := |C(T) \cap C(T')|$.
 \end{definition}
 
-Bipartition support measures the similarity between the topology of the trees.
+The following lemma follows from simple set algebra and we include the proof in the appendix for completeness.
+\begin{lemma}\label{lem:sum_RF_support}
+For two fully resolved trees $T,T' \in \mathcal{T}_S$, $\RF(T,T')+2\bs(T,T') = 4n - 6$ where $n := |S|$.
+\end{lemma}
 
-\subsection{Problem Statement}
-Let $T_1$ and $T_2$ be two fully resolved trees on leaf sets $S_1$ and $S_2$, respectively, such that $X := S_1 \cap S_2 \neq \emptyset$. Let $S := S_1 \cup S_2$. The maximum bipartition support supertree problem on two input trees, abbreviated \textsc{Max-Bisup-Supertree-$2$}, finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to $T_1$ and $T_2$. That is, 
-\begin{align*}
-    T^* &= \argmax_{T \in \mathcal{T}_S} \bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)\\ 
-        &= \argmax_{T \in \mathcal{T}_S} |C(T|_{S_1})\cap C(T_1)| + |C(T|_{S_2}) \cap C(T_2)|.
-\end{align*}
-We call $\bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)$ the support score of $T$ when $T_1$ and $T_2$ are clear from context.\\
+% Let $T_1$ and $T_2$ be two fully resolved trees on leaf sets $S_1$ and $S_2$, respectively, such that $X := S_1 \cap S_2 \neq \emptyset$. Let $S := S_1 \cup S_2$. The maximum bipartition support supertree problem on two input trees, abbreviated \bisuptwo, finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to $T_1$ and $T_2$. That is, 
+% \begin{align*}
+%     T^* &= \argmax_{T \in \mathcal{T}_S} \bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2) %\\ 
+%         %&= \argmax_{T \in \mathcal{T}_S} |C(T|_{S_1})\cap C(T_1)| + |C(T|_{S_2}) \cap C(T_2)|.
+% \end{align*}
+% We call $\bs(T|_{S_1}, T_1) + \bs(T|_{S_2}, T_2)$ the support score of $T$ when $T_1$ and $T_2$ are clear from context.\\
 
-The more general maximum bipartition support supertree problem on a set of $N$ input trees, abbreviated \textsc{Max-Bisup-Supertree-$N$}, takes in a set of input trees $T_1,T_2,\dots,T_N$ with leaf sets $S_1,S_2,\dots,S_N$, respectively. \textsc{Max-Bisup-Supertree-$N$} finds a fully resolved supertree $T^*$ on leaf set $S$ that maximizes the sum of the bipartition support of $T^*$ with respect to every input tree. That is,
-\begin{align*}
-    T^* &= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} \bs(T|_{S_i}, T_i) \\ 
-        %&= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} |C(T|_{S_1})\cap C(T_i)|.
-\end{align*}
+% The maximum bipartition support supertree problem on a set of $N$ input trees, abbreviated \bisupn, takes in a set of fully-resolved trees $T_1,T_2,\dots,T_N$ with leaf sets $S_1,S_2,\dots,S_N$, respectively, and finds a fully resolved supertree $T^*$ on leaf set $S := \bigcup_{i \in [N]}S_i$ that %maximizes the sum of the bipartition support of $T^*$ with respect to every input tree. That is,
+% such that
+% \begin{align*}
+%     T^* &= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} \bs(T|_{S_i}, T_i) %\\ 
+%         %&= \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} |C(T|_{S_1})\cap C(T_i)|.
+% \end{align*}
 
-\subsection{Algorithm}
-We present a polynomial time algorithm for \textsc{Max-Bisup-Supertree-$2$} in this subsection. We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
+% We also consider \genbisup, which generalizes \bisupn such that the input trees can be not fully-resolved.
+
+Let $T_1,T_2,\dots,T_N$ be a set of $N$ fully resolved trees with leaf sets $S_1,S_2,\dots,S_N$, respectively. Let $S := \bigcup_{i \in [N]}S_i$.
+
+The Robinson-Foulds supertree problem on these $N$ trees, abbreviated \rfn, finds a supertree $T^* \in \mathcal{T}_S$ such that
+\[T^* = \argmin_{T \in \mathcal{T}_S} \sum_{i \in [N]} \RF(T|_{S_i}, T_i).\]
+
+The maximum bipartition support supertree problem on these $N$ trees, abbreviated \bisupn, finds a supertree $T^* \in \mathcal{T}_S$ such that
+\[T^* = \argmax_{T \in \mathcal{T}_S} \sum_{i \in [N]} \bs(T|_{S_i}, T_i).\]
+We call $\sum_{i\in[N]}\bs(T|_{S_i}, T_i)$ the support score of $T$ when $T_i$'s are clear from context. Similarly, $\sum_{i \in [N]} \RF(T|_{S_i}, T_i)$ is the RF score of $T$.
+
+We pay attention to the special case of the problems where there are only two input trees, i.e., $\rftwo$ and $\bisuptwo$. We also consider \genbisup, which generalizes \bisupn such that the input trees can be not fully-resolved. We have the following lemma on the relationship of \rfn and \bisupn.
+
+\begin{lemma}
+Given the same input trees, any tree $T \in \mathcal{T}_S$ is an optimal solution for \rfn if and only it is an optimal solution for \bisupn.
+\end{lemma}
+\begin{proof}
+  Applying Lemma \ref{lem:sum_RF_support} to $T|_{S_i}$ and $T_i$ for all $i \in [N]$ and taking the sum of the equations, we have
+  \begin{align*}
+    \sum_{i \in [N]} (\RF(T|_{S_i}, T_i) + 2\bs(T|_{S_i},T_i)) &= \sum_{i \in [N]} |S_i| \\
+    \sum_{i \in [N]} \RF(T|_{S_i}, T_i) + 2\sum_{i \in [N]}\bs(T|_{S_i},T_i) &= \sum_{i \in [N]} |S_i|
+  \end{align*}
+  Since the RF score of $T$ and twice the support score of $T$ sums to $\sum_{i \in [N]} |S_i|$, which is a constant fixed from the input, we know that $T$ maximizes the support score if and only if it minimizes the RF score.
+\end{proof}
+
+\section{Algorithm for \bisuptwo}
+We present a polynomial time algorithm for \bisuptwo in this subsection. We first set up the notations for the algorithm and the analysis. Let $T_1,T_2,S_1,S_2$, and $X$ be defined as from the problem statement of \bisuptwo. Let $T_1|_X$ and $T_2|_X$ be the backbone trees of $T_1$ and $T_2$, respectively. Let $\Pi$ be the set of bipartitions of $X$. Let $\triv$ and $\ntriv$ denotes the set of trivial and non-trivial bipartitions in $C(T_1|_X) \cup C(T_2|_X)$. For each $e \in E(T_i|_X)$, $i \in \{1,2\}$, let $P(e)$ denote the path in $T_i$ from which $e$ is obtained by suppressing all degree-two nodes. Let $w(e)$ be the number of edges on $P(e)$. \\
 
 For any biparition $\pi$ of $X$, let $e_i(\pi)$ denote the edge that induces $\pi$ in $T_i|_X$ for $i \in \{1,2\}$. If $e_i(\pi)$ does not exists, any set associated with it is empty. We define a weight function $w:\Pi \to \mathbb{N}_{\ge 0}$ such that for any bipartition $\pi$ of $X$, $w(\pi) = w(e_1(\pi)) + w(e_2(\pi))$, If for any $i \in \{1,2\}$, no $e_i(\pi)$ induces $\pi$ in $T_i|_X$, then we use $w(e_i(\pi)) = 0$. Therefore, for any $\pi \notin C(T_1|_X) \cup C(T_2|_X)$, $w(\pi) = 0$. For any set $F$ of bipartitions, $w(F) = \sum_{\pi \in F} w(\pi)$.\\
 
@@ -421,7 +459,7 @@ Let $p_X(T)$ and $p_Y(T)$ (we omit the parameters $T_1$ and $T_2$ for brevity) b
 \end{align*}
 
 \begin{claim} \label{claim:sum_score_solves_prob}
-    If Algorithm \ref{alg:maxbisup} returns a tree $T$ such that $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, then Algorithm \ref{alg:maxbisup} solves \textsc{Max-Bisup-Supertree-$2$} correctly.
+    If Algorithm \ref{alg:maxbisup} returns a tree $T$ such that $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, then Algorithm \ref{alg:maxbisup} solves \bisuptwo correctly.
 \end{claim}
 \begin{proof}
 By definition of support score, any bipartition can only contribute to the support score if it is in $C(T_1) \cup C(T_2)$. It follows by definition of $\Pi_X$ and $\Pi_Y$ that $\Pi_X$ and $\Pi_Y$ is a disjoint decomposition of $C(T_1) \cup C(T_2)$. Thus, the support score of $T$ equals $p_X(T) + p_Y(T)$ for any tree $T$ on leaf set $S$. Then if $p_X(T) \ge p_X(T')$ and $p_Y(T) \ge p_Y(T')$ for any tree $T'$ with leaf set $S$, $T$ achieves the maximum support score among all trees of leaf set $S$, in particular, it achieves the maximum support score among all trees in $\mathcal{T}_S$.
@@ -572,27 +610,39 @@ Let $T$ be any tree of leaf set $S$. Let $F = C(T|_X)$. Then by Lemma \ref{lem:c
 \end{proof}
 
 \begin{theorem}\label{thm:correctness_alg}
-Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$} in $O(n^2|X|)$ time, where $n=\max\{|S_1|,|S_2|\}$.
+Algorithm \ref{alg:maxbisup} correctly solves \bisuptwo in $O(n^2|X|)$ time, where $n=\max\{|S_1|,|S_2|\}$.
 \end{theorem}
 \begin{proof}
-From Lemma \ref{lem:max_pY} and Claim \ref{claim:after_add_all_bipars} and Lemma \ref{lem:refine_only_increases}, we know that $T^*$ defined in Algorithm \ref{alg:maxbisup} satisfy that $p_X(T^*) \ge p_X(T)$ and $p_Y(T^*) \ge p_Y(T)$ for any tree with leaf set $S$. Then by Claim \ref{claim:sum_score_solves_prob}, Algorithm \ref{alg:maxbisup} correctly solves \textsc{Max-Bisup-Supertree-$2$}. Next we analyze the running time of Algorithm \ref{alg:maxbisup}.
+From Lemma \ref{lem:max_pY} and Claim \ref{claim:after_add_all_bipars} and Lemma \ref{lem:refine_only_increases}, we know that $T^*$ defined in Algorithm \ref{alg:maxbisup} satisfy that $p_X(T^*) \ge p_X(T)$ and $p_Y(T^*) \ge p_Y(T)$ for any tree with leaf set $S$. Then by Claim \ref{claim:sum_score_solves_prob}, Algorithm \ref{alg:maxbisup} correctly solves \bisuptwo. Next we analyze the running time of Algorithm \ref{alg:maxbisup}.
 
 First we analyze the running time of Algorithm \ref{alg:refine}. Line $2$ takes $O(|X|^2)$ time as we can do DFS search in $T|_X - v$ from every neighbor of $v$ and check in $O(|X|)$ time if any newly discovered vertex is a vertex in $A$ or $B$ and label the neighbors of $v$ accordingly. Line $5$ to $7$ takes $O(|X|)$ time as $v$ has $O(|X|)$ neighbors. Line $8$ takes $O(n)$ time as there are at most $O(n)$ extra subtrees in $\mathcal{T}(\pi)$. Line $9$ to $18$ takes $O(n+|X|^2 )$ time as there are at most $O(n)$ extra subtrees to be moved and there are at most $O(|X|)$ bipartitions in $H(v)$ with each of the containment conditions checkable in $O(|X|)$ time if labels of leaves are stored in a pre-processed sorted list instead of a set. Line $19$ can again take $O(n)$ time. The rest of the algorithm takes constant time. Overall, Algorithm \ref{alg:refine} runs in $O(n + |X|^2)$ time. Algorithm \ref{alg:trivial_refine} essentially performs line $8$ of Algorithm \ref{alg:refine} for trivial biparitions and runs in $O(n)$ time.
 
 For Algorithm \ref{alg:maxbisup}, line $1$ takes $O(n^2+ n|X|^2)$ time as we need to compute $\pi_e|_X$ and take the union for all $e \in E(T_1) \cup E(T_2)$. There are $O(n)$ edges in $E(T_1) \cup E(T_2)$. Computing $\pi_e|_X$ takes $O(n)$ time by running DFS on $T_i - e$ for $e \in E(T_i)$ to obtain $\pi_e$ and taking intersection of both sides of $e$ with $X$, separately. Taking union of the bipartitions takes $O(n |X|^2)$ time as whenever we add a new biparition, it needs to be compared to the $O(|X|)$ existing ones in the set and since both have size $O(|X|)$ the comparison can be done in $O(|X|)$ time again if they are represented by two sorted list instead of two sets. In this step, we can alway maintain a set of edges in $T_i$ for each bipartition $\pi$ such that $\pi_e|_X = \pi$. In line $2$ to $3$, we first compute the path $P(e_i(\pi))$ for each $\pi$ by assemling the set of edges asscociated with $\pi$ from last step into a path. This takes $O(n^2)$ time by counting the times any vertex appear in the set of edges and those which only appear once are the end of the path while those appear twice are internal nodes of the path. Then we can find the extra subtree attached to each internal vertex $v$ of the path $P(e_i(\pi))$ by DFS in $T_i - v$ from the neighbor of $v$ that does not appear in the path. Therefore, the procedure takes $O(n)$ time for each bipartition and thus takes $O(n^2|X|)$ time overall. Line $4$ takes $O(n)$ time and line $5-6$ runs Algrithm \ref{alg:trivial_refine} $O(|X|)$ times using a total of $O(n|X|)$ time. Line $7$ constructs an incompatibility graph with $|V_1\cup V_2| = O(|X|)$ and $|E| = O(|X|^2)$ in $O(|X|^3)$ time as compatibility of two biparitions can be checked in $O(|X|)$ time. Line $8$ runs in $O(|V||E|) = O(|X|^3)$ time.\note{(write algorithm seperately?)} Line $9$ runs in $O(|X|)$ time. Line $10-11$ runs Algorithm \ref{alg:refine} $O(|X|)$ times with a total of $O(n|X|+|X|^3)$ time. Line $12$ runs random refinement steps at most $|X|$ times, each of which can take $O(n)$ time. Since $|X| \le n$, $|X|^3 \le n|X|^2 \le n^2|X|$, and thus, the overall running time of the algorithm is donimated by $O(|n|^2|X|)$.
 \end{proof}
 
-% \subsection{Hardness for \textsc{Max-Bisup-Supertree-$3$}}
-% In this subsection, we show that \textsc{Max-Bisup-Supertree-$N$} is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \textsc{Max-Bisup-Supertree-$3$}. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
+\subsection{Hardness for \textsc{Bisup-Supertree-$3$}}
+In this subsection, we show that \genbisup is NP-hard even when $N = 3$. We reduce the maximum weight independent set problem on tripartite graphs to \genbisupthree. We first reproduce the theorem that proves the maximum weight independent set problem on tripartite graphs to be NP-hard.
 
 
-% \begin{theorem}\label{thm:hardness}
-% \textsc{Max-Bisup-Supertree-$3$} is NP-hard.
-% \end{theorem}
+\begin{theorem}\label{thm:hardness}
+\genbisupthree is NP-hard.
+\end{theorem}
 
 
 \appendix
-\section{Proofs from Section \ref{sec:alg}}
+\section{Proofs from Section \ref{sec:prelim}}
+
+Proof of Lemma \ref{lem:sum_RF_support}
+\begin{proof}
+By definition we have 
+  \begin{align*}
+    &\RF(T,T')+2\bs(T,T') \\ &= |C(T)\backslash C(T')| + |C(T') \backslash C(T)| + 2|C(T) \cap C(T')| \\
+    &= |C(T)\backslash C(T') \cup (C(T) \cap C(T'))| + |C(T') \backslash C(T) \cup (C(T) \cap C(T'))|\\
+    &= |C(T)| + |C(T')|\\
+    &= 4n-6.
+  \end{align*}
+  The last equality follows from that every fully resolved tree with $n$ leaves has $2n-3$ bipartitions.
+\end{proof}
 
 Proof of Lemma \ref{lem:bipar_restrict_edge}
 \begin{proof}
@@ -607,6 +657,18 @@ Since $\pi$ is compatible with $C(T)$ but $\pi \notin C(T)$, by definition, ther
 To obtain $T'$ from $T$, we can delete $v$ and add two new vertices $v_a$, $v_b$ with an edge between them. We also connect all vertices in $N_A$ to $v_a$ and all vertices in $N_B$ to $v_b$. Then it is easy to see that $(v_a,v_b)$ induces $\pi$ in $T'$. 
 \end{proof}
 
+\section{Maximum Independent Set in Bipartite Graphs}
+Given an undirected bipartite graph $G= (V = A \cup B, E)$ with weights on vertices $w: V \to \mathbb{N}$, the Maximum Independent Set problem tries to find a independent set $I \subseteq V$ that maximizes $w(I)$, where $w(S) = \sum_{v\in S}w(v)$ for any $S \subseteq V$. We propose a weighted variant of the algorithm from [\note{need reference}] to solve the problem. \\
+
+We first turn the graph into a directed flow network $G' = (V \cup \{s,t\}, E')$ where $s, t$ are the newly added source and sink, respectively. To obtain $E'$, we direct all edges in $E$ from $A$ to $B$, add an edge from $s$ to each vertex $u \in A$ and add an edge from each vertex $v \in B$ to $t$. We set the capacities $c: E' \to \mathbb{N}$ such that $c(e) = \infty$ if $e \in E$, $c(e) = w(u)$ if $e = (s,u)$ and $c(e) = w(v)$ if $e = (v,t)$. Then we claim that any $s,t$-cut $(S,T)$ in $G'$ has a finite capacity $k$ if and only if $(S\cap A) \cup (T \cap B)$ is an independent set of weight $w(V) - k$ in $G$. \\
+
+We first observe that $((S \cap A) \cup (T\cap B)) \cup ((S \cap B) \cup (T \cap A)) = (S\cup T) \cap (A \cup B) = A \cup B = V$. \\
+
+Suppose $(S \cap A) \cup (T\cap B)$ is an independent set of weight $w(V) - k$ in $G$. Since $((S \cap A) \cup (T\cap B)) \cup ((S \cap B) \cup (T \cap A)) = V$, we have the weight of $(S \cap B) \cup (T \cap A)$ is $w(V)-(w(V)-k) = k$. Since $(S \cap A) \cup (T\cap B)$ is an independent set, there is no edge from $S \cap A$ to $T\cap B$. There is also no edge from $S \cap B$ to $T \cap A$ since edges in $E$ are directed from $A$ to $B$. Therefore the cut $(S,T)$ consist of only edges from $s$ to $T \cap A$ and from $S \cap B$ to $t$. Together the capacities of those edges are exactly the weight of the set $(S \cap B) \cup (T \cap A)$, which is $k$. \\
+
+For the other direction of the proof, suppose $(S,T)$ is an $s,t$-cut of finite capacity $k$. Since the cut has finite capacity, it does not contain any edge derived from $E$. In particular, there is no edge from $S \cap A$ to $T \cap B$ in $G'$, which implies there is no edge between $S\cap A$ and $T\cap B$ in $G$. Since there is also no edge among $S\cap A$ and $T\cap B$ in $G$, $(S\cap A) \cup (T \cap B)$ is an independent set. Since the edges in $(S,T)$ solely consist of edges from $s$ to $T \cap A$ and from $S \cap B$ to $t$, the sum of their capacities is $k$. Therefore, the weight of the set $(S \cap B) \cup (T \cap A)$ is $k$ and the weight of $(S\cap A) \cup (T \cap B)$ is $w(V)- k$.\\
+
+Since $w(V)$ is a fixed constant, we conclude that any $s,t$-cut $(S,T)$ is a minimum cut in $G'$ if and only if $(S\cap A) \cup (T \cap B)$ is an maximum independent set in $G$. By the standard Max-flow Min-cut theorem, a minimum $s,t$-cut in a directed graph is equivalent to the maximum $s,t$-flow. Thus, we can solve the Maximum Independent Set problem on bipartite graphs through a maximum flow algorithm.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                          %%
 %% Backmatter begins here                   %%
@@ -639,7 +701,7 @@ To obtain $T'$ from $T$, we can delete $v$ and add two new vertices $v_a$, $v_b$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % if your bibliography is in bibtex format, use those commands:
-\bibliographystyle{bmc-mathphys} % Style BST file (bmc-mathphys, vancouver, spbasic).
+\bibliographystyle{vancouver} % Style BST file (bmc-mathphys, vancouver, spbasic).
 \bibliography{references}      % Bibliography file (usually '*.bib' )
 % for author-year bibliography (bmc-mathphys or spbasic)
 % a) write to bib file (bmc-mathphys only)
@@ -667,16 +729,16 @@ To obtain $T'$ from $T$, we can delete $v$ and add two new vertices $v_a$, $v_b$
 %% Do not use \listoffigures as most will included as separate files
 
 \section*{Figures}
-  \begin{figure}[h!]
-  \caption{\csentence{Sample figure title.}
-      A short description of the figure content
-      should go here.}
-      \end{figure}
+%   \begin{figure}[h!]
+%   \caption{\csentence{Sample figure title.}
+%       A short description of the figure content
+%       should go here.}
+%       \end{figure}
 
-\begin{figure}[h!]
-  \caption{\csentence{Sample figure title.}
-      Figure legend text.}
-      \end{figure}
+% \begin{figure}[h!]
+%   \caption{\csentence{Sample figure title.}
+%       Figure legend text.}
+%       \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
@@ -687,16 +749,16 @@ To obtain $T'$ from $T$, we can delete $v$ and add two new vertices $v_a$, $v_b$
 %% Use of \listoftables is discouraged.
 %%
 \section*{Tables}
-\begin{table}[h!]
-\caption{Sample table title. This is where the description of the table should go.}
-      \begin{tabular}{cccc}
-        \hline
-           & B1  &B2   & B3\\ \hline
-        A1 & 0.1 & 0.2 & 0.3\\
-        A2 & ... & ..  & .\\
-        A3 & ..  & .   & .\\ \hline
-      \end{tabular}
-\end{table}
+% \begin{table}[h!]
+% \caption{Sample table title. This is where the description of the table should go.}
+%       \begin{tabular}{cccc}
+%         \hline
+%            & B1  &B2   & B3\\ \hline
+%         A1 & 0.1 & 0.2 & 0.3\\
+%         A2 & ... & ..  & .\\
+%         A3 & ..  & .   & .\\ \hline
+%       \end{tabular}
+% \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                               %%
@@ -705,13 +767,13 @@ To obtain $T'$ from $T$, we can delete $v$ and add two new vertices $v_a$, $v_b$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section*{Additional Files}
-  \subsection*{Additional file 1 --- Sample additional file title}
-    Additional file descriptions text (including details of how to
-    view the file, if it is in a non-standard format or the file extension).  This might
-    refer to a multi-page table or a figure.
+  % \subsection*{Additional file 1 --- Sample additional file title}
+  %   Additional file descriptions text (including details of how to
+  %   view the file, if it is in a non-standard format or the file extension).  This might
+  %   refer to a multi-page table or a figure.
 
-  \subsection*{Additional file 2 --- Sample additional file title}
-    Additional file descriptions text.
+  % \subsection*{Additional file 2 --- Sample additional file title}
+  %   Additional file descriptions text.
 
 
 \end{backmatter}
