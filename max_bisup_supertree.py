@@ -134,7 +134,6 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	vtx_bipars[str(node_counter)] = CT1X | CT2X
 	for pi in CT1X | CT2X:
 		bipar_vtx[pi] = str(node_counter)
-	print("Vertex 0 is " + str(node_counter))
 	node_counter += 1
 
 	# compute maximum independent set
