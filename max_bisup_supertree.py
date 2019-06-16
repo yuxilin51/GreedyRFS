@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 """
 Computes an approximate maximum bipartition support supertree of the list of given trees under the given greedy ordering 
 """
-def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
+def max_bisup_tree_many(trees, node_counter, ordering = "max_shared_leaves"):
 	n = len(trees)
 	print("merging ",str(n)," trees")
 	used_tree_idxs = set()
@@ -24,7 +24,7 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 				shared_leaves[(i,j)] = len(leaf_sets[i] & leaf_sets[j])
 		for k in range(n-1):
 			idx1,idx2 = max(shared_leaves, key = shared_leaves.get)
-			new_t = max_bisup_tree_two(trees[idx1],trees[idx2])
+			new_t, node_counter = max_bisup_tree_two(trees[idx1],trees[idx2], node_counter)
 			print("new tree is a tree:", nx.is_tree(new_t))
 			new_t_dd = nx_tree_to_dd_tree(new_t)
 			print("new tree is ", new_t_dd.as_string(schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True))
@@ -67,7 +67,7 @@ def max_bisup_tree_many(trees, ordering = "max_shared_leaves"):
 """
 Computes and returns the maximum bipartition support supertree of the two given trees
 """
-def max_bisup_tree_two(T1, T2):
+def max_bisup_tree_two(T1, T2, node_counter):
 	print("start merging two trees")
 	if not nx.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
@@ -116,12 +116,13 @@ def max_bisup_tree_two(T1, T2):
 	
 	# compute T = T_hat, which is a star on leaf set of X with all extra subtrees attached to the center
 	T = nx.Graph()
-	T.add_node('0')
+	T.add_node(str(node_counter))
 	for x in X:
-		T.add_edge('0',x)
+		T.add_edge(str(node_counter),x)
 	for r,t in all_extra_subtrees:
 		T.update(t)
-		T.add_edge('0',r)
+		T.add_edge(str(node_counter),r)
+	
 	# nx.draw(T, with_labels = True)
 	# plt.show()
 
@@ -130,10 +131,10 @@ def max_bisup_tree_two(T1, T2):
 	# bipar_vtx is a dictionary between a biparition pi and the vertex that should be refined for the addition of pi
 	bipar_vtx = dict()
 	# at beginning, vertex '0' associated with every bipartition and every bipartition points to '0'
-	vtx_bipars['0'] = CT1X | CT2X
+	vtx_bipars[str(node_counter)] = CT1X | CT2X
 	for pi in CT1X | CT2X:
-		bipar_vtx[pi] = '0'
-
+		bipar_vtx[pi] = str(node_counter)
+	node_counter += 1
 
 	# compute maximum independent set
 	G = incompatibility_graph(CT1X, CT2X)
@@ -143,14 +144,14 @@ def max_bisup_tree_two(T1, T2):
 	# refine the tree with bipartitions in I and in intersection of CT1X and CT2X
 	for pi in I | (CT1X & CT2X):
 		# print("refine with ",  pi )
-		refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees)
+		node_counter = refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter)
 		# nx.draw(T, with_labels = True)
 		# plt.show()
 
 	# arbitrarily refine the tree if there is polytomy
-	arbitrary_refine(T)
+	node_counter = arbitrary_refine(T, node_counter)
 
-	return T
+	return T, node_counter
 
 
 """
@@ -187,7 +188,7 @@ def max_ind_set(G,C1,C2, weight):
 """
 
 """
-def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
+def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter):
 	A = pi[0]
 	B = pi[1]
 	# Case 1: pi is trivial, do not split vertex, but attach all subtrees in order
@@ -207,7 +208,9 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
 		attach_point = bipar_vtx[pi]
 		for r,t in bipar_subtrees[pi]:
 			T.remove_edge(r, attach_point)
-			current = va+r
+			# current = va+r
+			current = str(node_counter)
+			node_counter += 1
 			T.add_node(current)
 			T.add_edge(prev,current)
 			T.add_edge(current,r)
@@ -226,14 +229,20 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
 
 
 		# make two copies of original named va and vb
-		va = original+'0'
-		vb = original+'1'
+		# va = original+'0'
+		# vb = original+'1'
+		va = str(node_counter)
+		node_counter += 1
+		vb = str(node_counter)
+		node_counter += 1
 
 		# create a new vertex for each subtree associated with pi connect through va to vb
 		prev = va
 		for r,t in bipar_subtrees[pi]:
 			T.remove_edge(r, original)
-			current = va+r
+			# current = va+r
+			current = str(node_counter)
+			node_counter += 1
 			T.add_node(current)
 			T.add_edge(prev,current)
 			T.add_edge(current,r)
@@ -309,19 +318,24 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees):
 		# delete pi as a key in bipar_vtx (may not be necessary?)
 		del bipar_vtx[pi]
 
+	return node_counter
 
 """
 Refine the given tree at any node with degree > 3 arbitrarily 
 (except that both copies of the node need to have at least 2 neighbors other than each other)
 """
-def arbitrary_refine(T):
-	print("Need to refine tree arbitrarily")
+def arbitrary_refine(T, node_counter):
+	
 	polytomies = {v for v,d in T.degree() if d > 3}
 	while len(polytomies) != 0:
-
+		print("Need to refine tree arbitrarily")
 		v = next(iter(polytomies))
-		va = v+'0'
-		vb = v+'1'
+		va = str(node_counter)
+		node_counter += 1
+
+		vb = str(node_counter)
+		node_counter += 1
+
 		print("refines node v = ", v, " into va = ", va, " and vb = ", vb)
 		T.add_nodes_from([va,vb])
 		for n in T.neighbors(v):
@@ -341,6 +355,7 @@ def arbitrary_refine(T):
 		if T.degree(vb) > 3:
 			polytomies.add(vb)
 
+	return node_counter
 
 
 ############### Helper functions ###############
