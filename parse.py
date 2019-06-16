@@ -14,6 +14,7 @@ def run_max_bisup_suptertree(dd_trees, outfile):
     trees = []
     i = 1
     node_label = dict()
+    # node_counter = 0
     for dd_t in dd_trees:
         t = nx.Graph()
         # add nodes and give non-leaves names with number
@@ -35,8 +36,9 @@ def run_max_bisup_suptertree(dd_trees, outfile):
         suppress_degree_two(t)
         # nx.draw(t, with_labels = True)
         # plt.show()
+        i = supertree.arbitrary_refine(t, i)
         trees.append(t)
-    output_dd_tree = nx_tree_to_dd_tree(supertree.max_bisup_tree_many(trees))
+    output_dd_tree = nx_tree_to_dd_tree(supertree.max_bisup_tree_many(trees, i + 1))
     output_dd_tree.write(path = outfile, schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True)
 
 """
@@ -55,6 +57,7 @@ def nx_tree_to_dd_tree(T):
     root = next(iter(T.nodes()))
     dd_tree = dd.Tree()
     dd_tree.seed_node = label_node[root]
+    print(root)
 
     # add the edges in the tree
     for v,successors in nx.bfs_successors(T, root):
