@@ -68,6 +68,7 @@ def max_bisup_tree_many(trees, node_counter, ordering = "max_shared_leaves"):
 Computes and returns the maximum bipartition support supertree of the two given trees
 """
 def max_bisup_tree_two(T1, T2, node_counter):
+	print(type(T1.node()))
 	print("start merging two trees")
 	if not nx.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
@@ -78,36 +79,54 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	S = S1 | S2
 	X = S1 & S2
 
-	CT1X = bipartitions(T1,X)
-	CT2X = bipartitions(T2,X)
+	pre_CT1X = bipartitions(T1,X)
+	pre_CT2X = bipartitions(T2,X)
+
+	CT1X = set()
+	for i in pre_CT1X.keys():
+		CT1X.add(i)
+
+	CT2X = set()
+	for i in pre_CT2X.keys():
+		CT2X.add(i)
 
 	# make changes to bipartitions in CT2X such that if it also shows up in CT1X, the order of the tuple follows the one drom CT1X
 	# this makes sure that we can directly do set union and intersection on CT1X and CT2X
 	# and that the ordered trees respect the same order
 	changes = set()
 	for pi in CT2X:
+		# print(type(pi[0]))
 		if pi not in CT1X and equiv_bipar(pi) in CT1X:
 			changes.add(pi)
 	for pi in changes:
 		CT2X.remove(pi)
 		CT2X.add(equiv_bipar(pi))
 
+		pre_CT2X[equiv_bipar(pi)] = equiv_bipar(pre_CT2X[pi])
+		pre_CT2X.pop(pi, None)
+
 	bipar_subtrees = dict()
 	weight = dict()
+	original_bipar1 = dict()
+	original_bipar2 = dict()
 	all_extra_subtrees = set()
+	extra_subtrees_to_pi = dict()
 	# compute ordered_subtrees associated with each bipartition and the weight of each bipartition
 	for pi in CT1X:
-		bipar_subtrees[pi] = ordered_subtrees(T1,pi)
+		bipar_subtrees[pi] = ordered_subtrees(T1,pi,extra_subtrees_to_pi)
 		weight[pi] = len(edges_of_bipartition(T1,pi))
 		all_extra_subtrees.update(bipar_subtrees[pi])
+		original_bipar1[pi] = (1, pre_CT1X[pi])
 	for pi in CT2X:
 		if pi not in CT1X:
-			bipar_subtrees[pi] = ordered_subtrees(T2,pi)
+			bipar_subtrees[pi] = ordered_subtrees(T2,pi,extra_subtrees_to_pi)
 			weight[pi] = len(edges_of_bipartition(T2,pi))
 		else:
-			bipar_subtrees[pi].extend(ordered_subtrees(T2,pi))
-			weight[pi] = weight[pi] + len(edges_of_bipartition(T2,pi))
+			bipar_subtrees[pi].extend(ordered_subtrees(T2,pi,extra_subtrees_to_pi))
+			weight[pi] = weight[pi] + len(edges_of_bipartition(T2,pi))			
 		all_extra_subtrees.update(bipar_subtrees[pi])
+		original_bipar2[pi] = (2, pre_CT2X[pi])
+		
 	# for pi in CT1X & CT2X:
 	# 	print("weight of pi = ", pi, ": ", weight[pi])
 	# for r,t in all_extra_subtrees:
@@ -116,12 +135,12 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	
 	# compute T = T_hat, which is a star on leaf set of X with all extra subtrees attached to the center
 	T = nx.Graph()
-	T.add_node(str(node_counter))
+	T.add_node('x'+str(node_counter))
 	for x in X:
-		T.add_edge(str(node_counter),x)
+		T.add_edge('x'+str(node_counter),x)
 	for r,t in all_extra_subtrees:
 		T.update(t)
-		T.add_edge(str(node_counter),r)
+		T.add_edge('x'+str(node_counter),r)
 	
 	# nx.draw(T, with_labels = True)
 	# plt.show()
@@ -131,9 +150,9 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	# bipar_vtx is a dictionary between a biparition pi and the vertex that should be refined for the addition of pi
 	bipar_vtx = dict()
 	# at beginning, vertex '0' associated with every bipartition and every bipartition points to '0'
-	vtx_bipars[str(node_counter)] = CT1X | CT2X
+	vtx_bipars['x'+str(node_counter)] = CT1X | CT2X
 	for pi in CT1X | CT2X:
-		bipar_vtx[pi] = str(node_counter)
+		bipar_vtx[pi] = 'x'+str(node_counter)
 	node_counter += 1
 
 	# compute maximum independent set
@@ -143,8 +162,9 @@ def max_bisup_tree_two(T1, T2, node_counter):
 
 	# refine the tree with bipartitions in I and in intersection of CT1X and CT2X
 	for pi in I | (CT1X & CT2X):
+	# for pi in I:
 		# print("refine with ",  pi )
-		node_counter = refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter)
+		node_counter = refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_subtrees_to_pi)
 		# nx.draw(T, with_labels = True)
 		# plt.show()
 
@@ -188,9 +208,10 @@ def max_ind_set(G,C1,C2, weight):
 """
 
 """
-def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter):
+def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_subtrees_to_pi):
 	A = pi[0]
 	B = pi[1]
+	
 	# Case 1: pi is trivial, do not split vertex, but attach all subtrees in order
 	if bipar_is_trivial(pi):
 		# find va and vb 
@@ -209,7 +230,7 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter):
 		for r,t in bipar_subtrees[pi]:
 			T.remove_edge(r, attach_point)
 			# current = va+r
-			current = str(node_counter)
+			current = 'x'+str(node_counter)
 			node_counter += 1
 			T.add_node(current)
 			T.add_edge(prev,current)
@@ -231,9 +252,9 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter):
 		# make two copies of original named va and vb
 		# va = original+'0'
 		# vb = original+'1'
-		va = str(node_counter)
+		va = 'x'+str(node_counter)
 		node_counter += 1
-		vb = str(node_counter)
+		vb = 'x'+str(node_counter)
 		node_counter += 1
 
 		# create a new vertex for each subtree associated with pi connect through va to vb
@@ -241,7 +262,7 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter):
 		for r,t in bipar_subtrees[pi]:
 			T.remove_edge(r, original)
 			# current = va+r
-			current = str(node_counter)
+			current = 'x'+str(node_counter)
 			node_counter += 1
 			T.add_node(current)
 			T.add_edge(prev,current)
@@ -307,9 +328,49 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter):
 						# print("added edge to vb")
 						T.add_edge(n, vb)
 					# ow, n is the root of an extra subtree attached to v because it doesn't matter, 
-					# so we can connect to either va or vb, we always connect to va
+					elif extra_subtrees_to_pi[n][0] <= A or extra_subtrees_to_pi[n][1] <= A:
+						print("new va")
+						T.add_edge(n, va)
+					elif extra_subtrees_to_pi[n][0] <= B or extra_subtrees_to_pi[n][1] <= B:
+						print("new vb")
+						T.add_edge(n, vb)
 					else:
-						T.add_edge(n,va)
+						print("new random")
+						T.add_edge(n, vb)
+
+					# # so we can connect to either va or vb, we always connect to va
+					# elif len(c & leaf_of_one) != 0:
+					# 	if pi in original_bipar1:
+					# 		(_, pre_pi1) = original_bipar1[pi]
+					# 		pre_A1 = pre_pi1[0]
+					# 		pre_B1 = pre_pi1[1]
+					# 		if len(c & pre_A1) != 0:
+					# 			T.add_edge(n, va)
+					# 		elif len(c & pre_B1) != 0:
+					# 			T.add_edge(n, vb)
+					# 		else:
+					# 			print("You're not supposed to be here 1!")
+					# 			T.add_edge(n, vb)
+					# 	else:
+					# 		print("You're not supposed to be here 2!")
+					# 		T.add_edge(n, va)
+					# elif len(c & leaf_to_two) != 0:
+					# 	if pi in original_bipar2:
+					# 		(_, pre_pi2) = original_bipar2[pi]
+					# 		pre_A2 = pre_pi2[0]
+					# 		pre_B2 = pre_pi2[1]
+					# 		if len(c & pre_A2) != 0:
+					# 			T.add_edge(n, va)
+					# 		elif len(c & pre_B2) != 0:
+					# 			T.add_edge(n, vb)
+					# 		else:
+					# 			print("You're not supposed to be here 3!")
+					# 			T.add_edge(n, vb)
+					# 	else:
+					# 		print("You're not supposed to be here 4!")
+					# 		T.add_edge(n, va)
+					# else:
+					# 	print("You're not supposed to be here 5!")
 					break
 
 		# delete original as a key in vtx_bipars
@@ -325,15 +386,14 @@ Refine the given tree at any node with degree > 3 arbitrarily
 (except that both copies of the node need to have at least 2 neighbors other than each other)
 """
 def arbitrary_refine(T, node_counter):
-	
 	polytomies = {v for v,d in T.degree() if d > 3}
 	while len(polytomies) != 0:
 		print("Need to refine tree arbitrarily")
 		v = next(iter(polytomies))
-		va = str(node_counter)
+		va = 'x'+str(node_counter)
 		node_counter += 1
 
-		vb = str(node_counter)
+		vb = 'x'+str(node_counter)
 		node_counter += 1
 
 		print("refines node v = ", v, " into va = ", va, " and vb = ", vb)
@@ -436,13 +496,14 @@ def bipartitions(T, X = None):
 	if X is None:
 		X = leaf_set(T)
 	# iterate through all edges and add the bipartition induced by that edge if the bipartition is not None
-	bipartitions = set()
+	bipartitions = dict()
 	for e in T.edges():
-		pi = restrict_bipartition(bipartition(T,e), X)
+		pre_pi = bipartition(T,e)
+		pi = restrict_bipartition(pre_pi, X)
 		if pi is not None:
 			pi_reverse = (pi[1],pi[0])
-			if pi not in bipartitions and pi_reverse not in bipartitions:
-				bipartitions.add(pi)
+			if pi not in bipartitions.keys() and pi_reverse not in bipartitions.keys():
+				bipartitions[pi] = pre_pi
 	return bipartitions
 
 
@@ -490,7 +551,7 @@ def subtree_off_edge(T, e, v):
 Returns an ordered list of extra subtrees on the path of edges which induce pi = (A,B) in T|_X where X = leaves of pi
 The first extra subtree is closest to A
 """
-def ordered_subtrees(T, pi):
+def ordered_subtrees(T, pi, extra_subtrees_to_pi):
 	#count the appearance of nodes in the set of edges and the ones showing up once are the two ends s and t
 	nodes_count = dict()
 	for e in edges_of_bipartition(T,pi):
@@ -519,6 +580,8 @@ def ordered_subtrees(T, pi):
 			if other not in nodes_count:
 				edge_node_pairs.append(((node,other),other))
 	trees = [(v, subtree_off_edge(T,e,v)) for e,v in edge_node_pairs]
+	for (v,t) in trees:
+		extra_subtrees_to_pi[v] = pi
 	# for v,t in trees:
 	# 	print("root", v)
 	# 	print("tree edges", t.edges())

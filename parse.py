@@ -5,6 +5,7 @@ import max_bisup_supertree as supertree
 import argparse
 import os
 import sys
+import time
 
 """
 Turn the given list of dendropy trees into networkx trees and run max_bisup_tree_many on the list
@@ -22,8 +23,8 @@ def run_max_bisup_suptertree(dd_trees, outfile):
             if node.taxon is not None:
                 t.add_node(node.taxon.label)
             else:
-                t.add_node(str(i))
-                node_label[node] = str(i)
+                t.add_node('x'+str(i))
+                node_label[node] = 'x'+str(i)
                 i += 1
         # add edges
         for node in dd_t.nodes():
@@ -36,17 +37,20 @@ def run_max_bisup_suptertree(dd_trees, outfile):
         suppress_degree_two(t)
         # nx.draw(t, with_labels = True)
         # plt.show()
+        print(i)
         i = supertree.arbitrary_refine(t, i)
         trees.append(t)
+    print("Checking all input" + str(len(dd_trees)))
+    # time.sleep(5)
     output_dd_tree = nx_tree_to_dd_tree(supertree.max_bisup_tree_many(trees, i + 1))
     output_dd_tree.write(path = outfile, schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True)
+    nx_tree_to_dd_tree(trees[0]).write(path = "one", schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True)
+    nx_tree_to_dd_tree(trees[1]).write(path = "two", schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True)
 
 """
 Turns a networkx tree into a dendropy tree
 """
 def nx_tree_to_dd_tree(T):
-
-    
     # build dict from string label to dendropy node   
     label_node = dict()
     for v in T.nodes():
