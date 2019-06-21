@@ -1,4 +1,4 @@
-#!/Users/lethien_96/anaconda/bin/python
+
 """
 Modified by Thien Le in 2019 May for HMMDecomposition
 """
