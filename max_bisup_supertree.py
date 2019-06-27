@@ -57,7 +57,6 @@ Computes and returns the maximum bipartition support supertree of the two given 
 """
 def max_bisup_tree_two(T1, T2, node_counter):
 
-	print("start merging two trees")
 	if not nx.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
 	elif not alg.is_tree(T2):
@@ -85,6 +84,7 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	weight = dict()
 	all_extra_subtrees = set()
 	extra_subtrees_to_pi = dict()
+	
 	# compute ordered_subtrees associated with each bipartition and the weight of each bipartition
 	for pi in CT1X:
 		bipar_subtrees[pi] = ordered_subtrees(T1,pi,extra_subtrees_to_pi)
@@ -208,7 +208,6 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_sub
 		# find vtx to split as original 
 		original = bipar_vtx[pi]
 
-
 		# make two copies of original named va and vb
 		va = 'x'+str(node_counter)
 		node_counter += 1
@@ -259,7 +258,6 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_sub
 			for r,t in bipar_subtrees[bipar]:
 				T.remove_edge(r, original)
 				T.add_edge(r, va)
-
 
 
 		# partition neighbors of original into two sets, 
@@ -531,9 +529,6 @@ def nx_tree_to_dd_tree(T):
         for s in successors:
             dd_child = label_node[s]
             dd_node.add_child(dd_child)
-
-    # nx.draw(T, with_labels = True)
-    # plt.show()
     return dd_tree
 
 
