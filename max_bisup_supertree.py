@@ -10,11 +10,10 @@ import matplotlib.pyplot as plt
 
 
 """
-Computes an approximate maximum bipartition support supertree of the list of given trees under the given greedy ordering 
+Heuristic for computing split fit supertree (and thus RF supertree) of the list of given trees under the given greedy ordering 
 """
 def max_bisup_tree_many(trees, node_counter, ordering = "max_shared_leaves"):
 	n = len(trees)
-	print("merging ",str(n)," trees")
 	used_tree_idxs = set()
 	if ordering is "max_shared_leaves":
 		leaf_sets = [leaf_set(t) for t in trees]
@@ -25,11 +24,7 @@ def max_bisup_tree_many(trees, node_counter, ordering = "max_shared_leaves"):
 		for k in range(n-1):
 			idx1,idx2 = max(shared_leaves, key = shared_leaves.get)
 			new_t, node_counter = max_bisup_tree_two(trees[idx1],trees[idx2], node_counter)
-			print("new tree is a tree:", nx.is_tree(new_t))
 			new_t_dd = nx_tree_to_dd_tree(new_t)
-			print("new tree is ", new_t_dd.as_string(schema = "newick", suppress_leaf_taxon_labels = True, suppress_leaf_node_labels = False, suppress_internal_node_labels = True))
-			# nx.draw(new_t, with_labels = True)
-			# plt.show()
 			used_tree_idxs.update({idx1,idx2})
 			# compute num shared leaves between newtree and all existing but not used trees and add to dictionary
 			trees.append(new_t)
@@ -49,18 +44,11 @@ def max_bisup_tree_many(trees, node_counter, ordering = "max_shared_leaves"):
 				if (l, idx2) in shared_leaves:
 					del shared_leaves[(l,idx2)]
 
-		# nx.draw(t1, with_labels = True)
-		# plt.show()
-		# nx.draw(t2, with_labels = True)
-		# plt.show()
-
 	elif ordering is "max_shared_bipartitions":
 		pass
 	else:
 		pass
 
-	# nx.draw(trees[2*n-2], with_labels = True)
-	# plt.show()
 	return trees[2*n-2]
 
 
@@ -68,7 +56,7 @@ def max_bisup_tree_many(trees, node_counter, ordering = "max_shared_leaves"):
 Computes and returns the maximum bipartition support supertree of the two given trees
 """
 def max_bisup_tree_two(T1, T2, node_counter):
-	# print(type(T1.node()))
+
 	print("start merging two trees")
 	if not nx.is_tree(T1):
 		print("Input T1 for max_bisup_tree method is not a tree.")
@@ -87,7 +75,6 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	# and that the ordered trees respect the same order
 	changes = set()
 	for pi in CT2X:
-		# print(type(pi[0]))
 		if pi not in CT1X and equiv_bipar(pi) in CT1X:
 			changes.add(pi)
 	for pi in changes:
@@ -111,14 +98,8 @@ def max_bisup_tree_two(T1, T2, node_counter):
 			bipar_subtrees[pi].extend(ordered_subtrees(T2,pi,extra_subtrees_to_pi))
 			weight[pi] = weight[pi] + len(edges_of_bipartition(T2,pi))			
 		all_extra_subtrees.update(bipar_subtrees[pi])
-		
-	# for pi in CT1X & CT2X:
-	# 	print("weight of pi = ", pi, ": ", weight[pi])
-	# for r,t in all_extra_subtrees:
-	# 	nx.draw(t, with_labels= True)
-	# 	plt.show()
 	
-	# compute T = T_hat, which is a star on leaf set of X with all extra subtrees attached to the center
+	# compute T = T_init, which is a star on leaf set of X with all extra subtrees attached to the center
 	T = nx.Graph()
 	T.add_node('x'+str(node_counter))
 	for x in X:
@@ -127,8 +108,6 @@ def max_bisup_tree_two(T1, T2, node_counter):
 		T.update(t)
 		T.add_edge('x'+str(node_counter),r)
 	
-	# nx.draw(T, with_labels = True)
-	# plt.show()
 
 	# vtx_bipars is a dictionary between a vertice v and a set of bipartitions whose addition requires refinement at v
 	vtx_bipars = dict()
@@ -143,14 +122,11 @@ def max_bisup_tree_two(T1, T2, node_counter):
 	# compute maximum independent set
 	G = incompatibility_graph(CT1X, CT2X)
 	I = max_ind_set(G, CT1X, CT2X, weight)
-	# print("max independent set is ", I)
 
 	# refine the tree with bipartitions in I and in intersection of CT1X and CT2X
 	i = 0
 	for pi in I | (CT1X & CT2X):
 		node_counter = refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_subtrees_to_pi)
-		# nx.draw(T, with_labels = True)
-		# plt.show()
 
 	# arbitrarily refine the tree if there is polytomy
 	node_counter = arbitrary_refine(T, node_counter)
@@ -234,8 +210,6 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_sub
 
 
 		# make two copies of original named va and vb
-		# va = original+'0'
-		# vb = original+'1'
 		va = 'x'+str(node_counter)
 		node_counter += 1
 		vb = 'x'+str(node_counter)
@@ -261,8 +235,6 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_sub
 		# update the pointers of all bipartitions associated with original which are compatible with pi
 		for bipar in vtx_bipars[original]:
 			if not same_bipartition(bipar, pi) and bipartitions_are_compatible(bipar, pi):
-				# print("bipar[0] ", bipar[0], "bipar[1]", bipar[1])
-				# print("A ", A, "B ", B)
 				if bipar[0] <= A or bipar[1] <= A:
 					vtx_bipars[va].add(bipar)
 					bipar_vtx[bipar] = va
@@ -293,33 +265,24 @@ def refine(T, pi, vtx_bipars, bipar_vtx, bipar_subtrees, node_counter, extra_sub
 		# partition neighbors of original into two sets, 
 		#connect those in components containing leaves of A to va and connect those in components containing leaves B to vb
 		neighbors = set(T.neighbors(original)).copy()
-		# print("current neighbors of original ", original, " is ", set(neighbors))
 		T.remove_node(original)
 		
 		for n in neighbors:
 			components = nx.connected_components(T)
-			# print("checking neighbor ", n)
 			for c in components:
-				# print("checking comp ", c)
 				if n in c:
 					# if the component also contains a vertex from A, connect it to va
-					# print("found containing comp")
 					if len(c & A) != 0:
-						# print("added edge to va")
 						T.add_edge(n, va)
 					# else if the component also contains a vertex from B, connect it to vb
 					elif len(c & B) != 0:
-						# print("added edge to vb")
 						T.add_edge(n, vb)
-					# ow, n is the root of an extra subtree attached to v because it doesn't matter, 
-					elif extra_subtrees_to_pi[n][0] <= A or extra_subtrees_to_pi[n][1] <= A:
-						print("new va")
+					# ow, n is the root of an extra subtree 
+					elif extra_subtrees_to_pi[n][0] <= A or extra_subtrees_to_pi[n][1] <= A:						
 						T.add_edge(n, va)
-					elif extra_subtrees_to_pi[n][0] <= B or extra_subtrees_to_pi[n][1] <= B:
-						print("new vb")
+					elif extra_subtrees_to_pi[n][0] <= B or extra_subtrees_to_pi[n][1] <= B:						
 						T.add_edge(n, vb)
 					else:
-						print("new random")
 						T.add_edge(n, vb)
 					break
 
@@ -338,7 +301,6 @@ Refine the given tree at any node with degree > 3 arbitrarily
 def arbitrary_refine(T, node_counter):
 	polytomies = {v for v,d in T.degree() if d > 3}
 	while len(polytomies) != 0:
-		print("Need to refine tree arbitrarily")
 		v = next(iter(polytomies))
 		va = 'x'+str(node_counter)
 		node_counter += 1
@@ -346,7 +308,6 @@ def arbitrary_refine(T, node_counter):
 		vb = 'x'+str(node_counter)
 		node_counter += 1
 
-		print("refines node v = ", v, " into va = ", va, " and vb = ", vb)
 		T.add_nodes_from([va,vb])
 		for n in T.neighbors(v):
 			if T.degree(va) < 2:
@@ -531,9 +492,6 @@ def ordered_subtrees(T, pi, extra_subtrees_to_pi):
 	trees = [(v, subtree_off_edge(T,e,v)) for e,v in edge_node_pairs]
 	for (v,t) in trees:
 		extra_subtrees_to_pi[v] = pi
-	# for v,t in trees:
-	# 	print("root", v)
-	# 	print("tree edges", t.edges())
 	return trees
 
 
@@ -578,68 +536,4 @@ def nx_tree_to_dd_tree(T):
     # plt.show()
     return dd_tree
 
-def main():
-	# T1= nx.Graph()
-	# T1.add_edges_from([('a','ab'),('b','ab'),('c','cd'),('d','cd'),('m','cdm'),('cd','cdm'),('ab','abcdm'),('cdm','abcdm'),('e','ef'),('f','ef'),('ef','g12ef'),('g','g12'),('g12','g12ef'),('g12','12'),('abcdm','g12ef')])
-	# plt.subplot(1, 3, 1)
-	# nx.draw(T1, with_labels = True)
-	# T2 = nx.Graph()
-	# T2.add_edges_from([('a','ab'),('b','ab'),('ab','abf'),('f','abf'),('i','ij'),('j',"ij"),('ij','abfij'),('abf','abfij'),('d','deh'),('e','eh'),('h','eh'),('eh','deh'),('deh','abfij')])
-	# plt.subplot(1, 3, 2)
-	# nx.draw(T2, with_labels = True)
-	# T3 = nx.Graph()
-	# T3.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgef'),('g','dg'),('d','dg'),('dg','dgef'),('abc','dgef')])
-	# T4 = nx.Graph()
-	# T4.add_edges_from([('a','ab'),('b','ab'),('c','abc'),('ab','abc'),('e','ef'),('f','ef'),('ef','dgh12ef'),('d','dh'),('h','dh'),('dh','dgh12'),('g','g12'),('g12','dgh12'),('g12','12'),('dgh12','dgh12ef'),('abc','dgh12ef')])
-	# max_bisup_tree_many([T1,T2,T3,T4])
-	# print(ordered_subtrees(T1,({'a','b','c'},{'e','f'})))
-	# T5 = nx.Graph()
-	# T5.add_edges_from([('a','ab'),('b','ab'),('ab','abch'),('c','abch'),('h','abch'),('d','defgi'),('e','defgi'),('f','defgi'),('g','defgi'),('i','defgi'),('abch','defgi')])
-	# arbitrary_refine(T5)
-	# nx.draw(T5,with_labels=True)
-	# plt.show()
-	T1 = nx.Graph()
-	T1.add_edges_from([('a','ab'),('b','ab'),('ab','cd'),('c','cd'),('d','cd')])
-	plt.subplot(1, 3, 1)
-	nx.draw(T1, with_labels = True)
-	T2 = nx.Graph()
-	T2.add_edges_from([('c','bc'),('b','bc'),('bc','de'),('d','de'),('e','de')])
-	plt.subplot(1, 3, 2)
-	nx.draw(T2, with_labels = True)
-	T = max_bisup_tree_two(T1,T2)
-	plt.subplot(1, 3, 3)
-	nx.draw(T,with_labels=True)
-	plt.show()	
-	# ordered_subtrees(T2, ({'e','h'},{'a','b'}))
-	# C1 = bipartitions(T1, {'a','b', 'd','e','f'})
-	# C2 = bipartitions(T2, {'a','b', 'd','e','f'})
-	# print("union ", bipar_set_union(C1, C2))
-	# print("difference ", bipar_set_difference(C1,C2))
-	# for pi in bipartitions(T1, {'a','b', 'd','e','f'}):
-	# 	for pi2 in bipartitions(T2,{'a','b', 'd','e','f'}):
-	# 		print(pi," and ",pi2," are compatible: ",bipartitions_are_compatible(pi,pi2))
-	# # balanced = ((((),()),()),(((),()),((),()))) 
-	# T2= nx.from_nested_tuple(balanced)
 
-	# extra_trees = extra_subtrees(T1, ({'a','c'},{'e','f'}))
-	# b1 = bipartitions(T)
-	# b2 = non_trivial_bipartitions(T,{'a','d','e','f'})
-	# print(b1)
-	# print(b2)
-	# b3 = restrict_bipartition(bipartition(T,('ab','abc')),{'a','b','d','e'})
-	# b4 = restrict_bipartition(bipartition(T,('abc','dgef')),{'a','b','d','e'})
-	# b5 = restrict_bipartition(bipartition(T,('ab','abc')),{'a','d','c','f'})
-	# print(same_bipartition(b3,b4))
-	# print(same_bipartition(b3,b5))
-	# print(same_bipartition(None,None))
-	# print(edges_of_bipartition(T,({'a','b'},{'e','f'})))
-	# for t in extra_subtrees(T,({'a','b'},{'e','f'})):
-	# 	print("extra subtree nodes", t.node())
-	# 	print("extra subtree edges", t.edges())
-	# nx.draw(T1, with_labels = True)
-	# plt.show()
-	# nx.draw(T2, with_labels = True)
-	# plt.show()
-
-if __name__ == '__main__':
- 	main()
